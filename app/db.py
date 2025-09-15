@@ -1,16 +1,17 @@
-import sqlite3, logging, bcrypt
+import sqlite3, logging
 from contextlib import contextmanager
 from typing import Optional, List, Dict, Any, Union, Tuple
 
+# from .utils import Password
+
 class SQLite:
-    """
-    A versatile SQLite database wrapper that provides core CRUD operations
-    and can be inherited by specific table-based database classes.
-    """
-    
-    def __init__(self, db_path: str = 'db.sqlite3'):
+    def __init__(self, db_path: str):
+        if not db_path or not isinstance(db_path, str):
+            raise ValueError('Database Error: db_path can\'t be empty!')
+        
         self.db_path = db_path
         self.logger = logging.getLogger(self.__class__.__name__)
+        
         self._initialize_database()
 
     def _initialize_database(self):
@@ -194,32 +195,9 @@ class SQLite:
             self.logger.error(f"Delete failed: {e} - Table: {table}")
             return 0
 
-    def create_table(self, table: str, schema: str) -> bool:
-        """
-        Create a table if it doesn't exist.
-        
-        Args:
-            table: Table name
-            schema: Table schema definition
-            
-        Returns:
-            bool: True if successful
-        """
-        if not table.isidentifier():
-            raise ValueError(f"Invalid table name: {table}")
-            
-        sql = f"CREATE TABLE IF NOT EXISTS {table} ({schema})"
-        return self.execute(sql)
-
     def drop_table(self, table: str) -> bool:
         """
         Drop a table if it exists.
-        
-        Args:
-            table: Table name
-            
-        Returns:
-            bool: True if successful
         """
         if not table.isidentifier():
             raise ValueError(f"Invalid table name: {table}")
@@ -230,12 +208,6 @@ class SQLite:
     def table_exists(self, table: str) -> bool:
         """
         Check if a table exists in the database.
-        
-        Args:
-            table: Table name
-            
-        Returns:
-            bool: True if table exists
         """
         sql = "SELECT name FROM sqlite_master WHERE type=? AND name=?"
         result = self.fetch_one(sql, ('table', table))
@@ -272,25 +244,7 @@ class SQLite:
         return result['count'] if result else 0
 
 
-
-class Password:
-    @staticmethod
-    def make_hash(password: str) -> bytes:
-        # Convert to bytes
-        bytes = password.encode('utf-8')
-
-        # Generate salt and hash
-        salt = bcrypt.gensalt()
-
-        return bcrypt.hashpw(bytes, salt)
-
-    @staticmethod
-    def check(password: str, password_hash: bytes) -> bool:
-        return bcrypt.checkpw(password.encode('utf-8'), password_hash)
-
-
-
-class User(SQLite):
+class UserTmp(SQLite):
     def __init__(self, table: str, db_path: str = 'db.sqlite3'):
         super().__init__(db_path)
         
@@ -306,7 +260,6 @@ class User(SQLite):
             password_hash TEXT NOT NULL CHECK(LENGTH(password_hash) >= 20),
             joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         """
-        return self.create_table(self.table, schema)
     
     def create_indexes_for_users_table(self):
         # Add index creation for frequently queried columns
@@ -315,14 +268,14 @@ class User(SQLite):
     
     def add_user(self, username, name, phone, password, is_admin=False):
         
-        pw_hash = Password.make_hash(password)
+        # pw_hash = Password.make_hash(password)
         
         data = {
             'username': username,
             'name': name,
             'phone': phone,
             'is_admin': is_admin,
-            'password_hash': pw_hash.decode('utf-8'),
+            'password_hash': 'pw_hash',
         }
         return self.insert(self.table, data)
 
@@ -372,5 +325,48 @@ class User(SQLite):
         if not pw_hash:
             return False
         
-        return Password.check(password, pw_hash)
+        #return Password.check(password, pw_hash)
 
+
+class DatabaseTable(SQLite):
+    """
+    A versatile SQLite database wrapper that provides core CRUD operations
+    
+    Args:
+        table: table name in the database e.g: users
+        schema: sql schema for the table in string form 
+          e.g:
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL
+        db_path: sqlite db name or path e.g: db.sqlite3
+    """
+    
+    def __init__(self, table: str, schema: str, db_path: str = 'db.sqlite3'):
+        if not table or not isinstance(table, str):
+            raise ValueError('Database Error: table name can\'t be empty!')
+        
+        if not schema or not isinstance(schema, str):
+            raise ValueError('Database Error: schema can\'t be empty!')
+        
+        self.__table = table
+        self.__schema = schema
+        
+        super().__init__(db_path)
+        
+        self.__init_table()
+        
+    def __init_table(self):
+        with self._get_cursor() as cursor:
+            sql = f"CREATE TABLE IF NOT EXISTS {self.table} ({self.schema})"
+            cursor.execute(sql)
+        
+    @property
+    def table(self):
+        return self.__table
+    
+    @property
+    def schema(self):
+        return self.__schema
+    
+
+User = DatabaseTable(table='users', schema='')
