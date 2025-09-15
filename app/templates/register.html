@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Manager - Register</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .meal-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+
+<body class="meal-pattern min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-blue-500 to-green-500 p-6 text-center">
+            <h1 class="text-3xl font-bold text-white">
+                <i class="fas fa-utensils mr-2"></i>Meal Manager
+            </h1>
+            <p class="text-blue-100 mt-2">Create your account</p>
+        </div>
+        
+        <!-- Registration Form -->
+        <form class="p-6 space-y-4">
+            <!-- Full Name Input -->
+            <div>
+                <label for="fullname" class="block text-sm font-medium text-gray-700 mb-1">
+                    <i class="fas fa-user text-blue-500 mr-2"></i>Full Name
+                </label>
+                <input 
+                    type="text" 
+                    id="fullname" 
+                    placeholder="Enter your full name"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    required
+                >
+            </div>
+            
+            <!-- Phone Number Input -->
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+                    <i class="fas fa-phone text-blue-500 mr-2"></i>Phone Number (Username)
+                </label>
+                <input 
+                    type="tel" 
+                    id="phone" 
+                    placeholder="Enter your phone number"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    required
+                >
+            </div>
+            
+            <!-- Password Input -->
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                    <i class="fas fa-lock text-blue-500 mr-2"></i>Password
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="Create a password"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    required
+                >
+            </div>
+            
+            <!-- Confirm Password Input -->
+            <div>
+                <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">
+                    <i class="fas fa-lock text-blue-500 mr-2"></i>Confirm Password
+                </label>
+                <input 
+                    type="password" 
+                    id="confirm-password" 
+                    placeholder="Confirm your password"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    required
+                >
+            </div>
+            
+            <!-- Terms and Conditions -->
+            <div class="flex items-center">
+                <input 
+                    type="checkbox" 
+                    id="terms" 
+                    class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
+                    required
+                >
+                <label for="terms" class="ml-2 block text-sm text-gray-700">
+                    I agree to the <a href="#" class="text-blue-500 hover:underline">Terms and Conditions</a>
+                </label>
+            </div>
+            
+            <!-- Submit Button -->
+            <button 
+                type="submit" 
+                class="w-full bg-gradient-to-r from-blue-500 to-green-500 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-green-600 transition shadow-md"
+            >
+                <i class="fas fa-user-plus mr-2"></i>Create Account
+            </button>
+        </form>
+        
+        <!-- Login Link -->
+        <div class="bg-gray-50 p-4 text-center border-t border-gray-200">
+            <p class="text-sm text-gray-600">
+                Already have an account? 
+                <a href="login.html" class="text-blue-500 font-semibold hover:underline">Log In</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
