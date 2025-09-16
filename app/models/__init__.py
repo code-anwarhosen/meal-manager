@@ -1,1 +1,1 @@
-from .example_model import ExampleModel
+from .user import User
