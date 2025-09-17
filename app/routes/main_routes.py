@@ -3,7 +3,7 @@ from flask import Blueprint, render_template
 bp = Blueprint('main', __name__)
 
 @bp.route('/')
-def dashboard():
+def home():
     return render_template('dashboard.html')
 
 

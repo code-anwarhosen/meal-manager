@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}{% endblock title %} | Meal Manager</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        .meal-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+
+    {% block css %}
+    {% endblock css %}
+
+</head>
+
+<body class="meal-pattern">
+    <!-- Navigation Header -->
+    <header class="bg-gradient-to-r from-blue-500 to-green-500 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-utensils text-2xl mr-2"></i>
+                <h1 class="text-xl font-bold">Meal Man</h1>
+            </div>
+
+            <div class="flex items-center text-lg font-semibold gap-3">
+                <a href="{{ url_for('main.home') }}">Home</a>
+                <a href="{{ url_for('main.group', id=1) }}">Temp-Group</a>
+                <a href="{{ url_for('user.login') }}">Login</a>
+                <a href="{{ url_for('user.register') }}">Register</a>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <!-- <button class="bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-semibold hover:bg-blue-300 transition">
+                    <i class="fas fa-plus-circle mr-1"></i> New
+                </button> -->
+                <div class="relative">
+                    <button class="flex items-center focus:outline-none">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                            <span class="text-white font-semibold">
+                                <i class="fas fa-user mr-1"></i>
+                            </span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {% block content %}
+    {% endblock content %}
+
+    {% block modal_content %}
+    {% endblock modal_content %}
+
+    <!-- Footer -->
+    <footer class="mt-12 py-6 text-center text-gray-500 text-sm">
+        <p>© 2025 Meal Manager. Made for flatmates 🏠</p>
+    </footer>
+
+    {% block javascript %}
+    {% endblock javascript %}
+    
+</body>
+</html>
