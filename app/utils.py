@@ -1,6 +1,5 @@
-from flask import session
-from app.models import User
-
+from flask import session, redirect, url_for, flash
+from functools import wraps
 
 # ---------- Auth: Session ----------
 class Auth:
@@ -29,3 +28,16 @@ class Auth:
         """Checks if a user is currently logged in."""
         return cls.USER_SESSION_KEY in session
 
+
+def login_required(func):
+    
+    @wraps(func)  # This preserves the function's metadata
+    def wrapper(*args, **kwargs):
+        if Auth.is_authenticated():
+            return func(*args, **kwargs)
+        
+        else:
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('user.login'))
+        
+    return wrapper
