@@ -1,8 +1,6 @@
 import bcrypt
 from app.db import BaseModel
 
-BaseModel.init_db()
-
 
 class Password:
     @staticmethod

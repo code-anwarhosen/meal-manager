@@ -3,28 +3,29 @@ from app.models import User
 
 
 # ---------- Auth: Session ----------
-USER_SESSION_KEY = 'user__name'
+class Auth:
+    USER_SESSION_KEY = 'user__name'
 
-def login_user(username, remember=False):
-    """Logs in the user by saving their username in the session."""
-    session[SESSION_USER_KEY] = username
-    if remember:
-        session.permanent = True
-    else:
-        session.permanent = False
+    @classmethod
+    def login_user(cls, username, remember=False):
+        """Logs in the user by saving their username in the session."""
+        session[cls.USER_SESSION_KEY] = username
+    
+        if remember:
+            session.permanent = True
+            
+        else:
+            session.permanent = False
 
-def logout_user():
-    """Logs out the user by removing them from the session."""
-    session.pop(USER_SESSION_KEY, None)
+    @classmethod
+    def logout_user(cls):
+        """Logs out the user by removing them from the session."""
+        
+        # session.pop(cls.USER_SESSION_KEY, None)
+        session.clear()
 
-def user_logged_in() -> bool:
-    """Checks if a user is currently logged in."""
-    return USER_SESSION_KEY in session
+    @classmethod
+    def is_authenticated(cls) -> bool:
+        """Checks if a user is currently logged in."""
+        return cls.USER_SESSION_KEY in session
 
-def current_user() -> 'User':
-    """Returns the currently logged-in user, or None."""
-    username = session.get(USER_SESSION_KEY)
-    if not username:
-        return None
-
-    return User.get(username=username)

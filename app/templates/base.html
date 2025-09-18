@@ -26,7 +26,7 @@
 <body class="meal-pattern">
 
     <!-- Flash Messages - Place right after <body> tag -->
-    <div class="fixed top-20 left-4 z-50 space-y-2 w-80 max-w-full">
+    <div class="fixed top-20 right-4 z-50 space-y-2 w-80 max-w-full">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
                 <div class="flash-message p-4 rounded-lg shadow-lg border-l-4 flex items-center justify-between
@@ -60,31 +60,56 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center">
                 <i class="fas fa-utensils text-2xl mr-2"></i>
-                <h1 class="text-xl font-bold">Meal Man</h1>
+                <h1 class="text-xl font-bold">Meal Manager</h1>
             </div>
 
-            <div class="flex items-center text-lg font-semibold gap-3">
-                <a href="{{ url_for('main.home') }}">Home</a>
-                <a href="{{ url_for('main.group', id=1) }}">Temp-Group</a>
-                <a href="{{ url_for('user.login') }}">Login</a>
-                <a href="{{ url_for('user.register') }}">Register</a>
-                <a href="{{ url_for('user.logout') }}">Logout</a>
+            <!-- Desktop Navigation (hidden on mobile) -->
+            <nav class="hidden md:flex items-center space-x-4 text-sm font-medium">
+                <a href="{{ url_for('main.home') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Home</a>
+                <a href="{{ url_for('main.group', id=1) }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Temp-Group</a>
+
+                {% if is_authenticated() %}
+                    <a href="{{ url_for('user.logout') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('user.login') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Login</a>
+                    <a href="{{ url_for('user.register') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Register</a>
+                {% endif %}
+            </nav>
+
+            <!-- Mobile menu button (hidden on desktop) -->
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
             </div>
 
+            <!-- User profile (visible on both mobile and desktop) -->
             <div class="flex items-center space-x-3">
-                <!-- <button class="bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-semibold hover:bg-blue-300 transition">
-                    <i class="fas fa-plus-circle mr-1"></i> New
-                </button> -->
                 <div class="relative">
                     <button class="flex items-center focus:outline-none">
                         <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
                             <span class="text-white font-semibold">
-                                <i class="fas fa-user mr-1"></i>
+                                <i class="fas fa-user"></i>
                             </span>
                         </div>
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Mobile Navigation Menu (hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gradient-to-r from-blue-500 to-green-500 px-4 py-2">
+            <nav class="flex flex-col justify-center items-center space-y-2">
+                <a href="{{ url_for('main.home') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Home</a>
+                <a href="{{ url_for('main.group', id=1) }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Temp-Group</a>
+
+                {% if is_authenticated() %}
+                    <a href="{{ url_for('user.logout') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('user.login') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Login</a>
+                    <a href="{{ url_for('user.register') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Register</a>
+                {% endif %}
+            </nav>
         </div>
     </header>
 
@@ -119,6 +144,40 @@
                     this.closest('.flash-message').remove();
                 });
             });
+
+
+
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+
+                    // Toggle between hamburger and close icon
+                    const icon = mobileMenuButton.querySelector('i');
+                    if (mobileMenu.classList.contains('hidden')) {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    } else {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    }
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenu.contains(event.target) &&
+                        !mobileMenuButton.contains(event.target) &&
+                        !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                        const icon = mobileMenuButton.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            }
         });
     </script>
 

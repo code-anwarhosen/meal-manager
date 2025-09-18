@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.models import User
-from app.utils import login_user, logout_user, user_logged_in
+from app.utils import Auth
 
 bp = Blueprint('user', __name__)
 
 
 @bp.route('/login/', methods=['GET', 'POST'])
 def login():
-    if user_logged_in():
+    if Auth.is_authenticated():
         flash('You\'re already logged in!')
         return redirect(url_for('main.home'))
 
@@ -16,10 +16,14 @@ def login():
         password = request.form.get('password')
         remember = request.form.get('remember') == 'on'
 
+        if not phone or not password:
+            flash('Phone and password are required!', 'error')
+            return redirect(url_for('user.login'))
+        
         user = User.get(username=phone)
 
         if user and User.check_password(password, user.password_hash):
-            login_user(user.username, remember=remember)
+            Auth.login_user(user.username, remember=remember)
             flash('Login successful!', 'success')
             return redirect(url_for('main.home'))
 
@@ -31,25 +35,29 @@ def login():
 
 @bp.route('/logout/', methods=['GET'])
 def logout():
-    if not user_logged_in():
+    if not Auth.is_authenticated():
         flash('You\'re not logged in!')
         return redirect(url_for('user.login'))
 
-    logout_user()
+    Auth.logout_user()
     flash('You\'re logged out!')
     return redirect(url_for('user.login'))
 
 
 @bp.route('/register/', methods=['GET', 'POST'])
 def register():
+    if Auth.is_authenticated():
+        flash('You\'re already logged in!')
+        return redirect(url_for('main.home'))
+    
     if request.method == 'POST':
         name = request.form.get('fullname')
         phone = request.form.get('phone')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm-password')
 
-        if not name or not phone:
-            flash('Name and phone are required!', 'error')
+        if not name or not phone or not password:
+            flash('Name, phone and password are required!', 'error')
             return redirect(url_for('user.register'))
 
         if password != confirm_password:
