@@ -1,6 +1,29 @@
+import bcrypt
 from app.db import BaseModel
 
-class User(BaseModel):
+BaseModel.init_db()
+
+
+class Password:
+    @staticmethod
+    def make_password(password: str) -> str:
+        # Convert to bytes
+        bytes = password.encode('utf-8')
+
+        # Generate salt and hash
+        salt = bcrypt.gensalt()
+
+        hash_bytes = bcrypt.hashpw(bytes, salt)
+        return hash_bytes.decode('utf-8')
+
+    @staticmethod
+    def check_password(password: str, password_hash: str) -> bool:
+        return bcrypt.checkpw(
+            password.encode('utf-8'),
+            password_hash.encode('utf-8')
+        )
+
+class User(BaseModel, Password):
     table_name = 'users'
     schema = {
         'columns': {
@@ -15,4 +38,3 @@ class User(BaseModel):
             f'CREATE INDEX IF NOT EXISTS idx_username ON {table_name}(username);'
         ]
     }
-User.init_db()

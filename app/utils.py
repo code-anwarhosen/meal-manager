@@ -1,20 +1,30 @@
-import bcrypt
+from flask import session
+from app.models import User
 
-class Password:
-    @staticmethod
-    def make_hash(password: str) -> str:
-        # Convert to bytes
-        bytes = password.encode('utf-8')
 
-        # Generate salt and hash
-        salt = bcrypt.gensalt()
+# ---------- Auth: Session ----------
+USER_SESSION_KEY = 'user__name'
 
-        hash_bytes = bcrypt.hashpw(bytes, salt)
-        return hash_bytes.decode('utf-8')
+def login_user(username, remember=False):
+    """Logs in the user by saving their username in the session."""
+    session[SESSION_USER_KEY] = username
+    if remember:
+        session.permanent = True
+    else:
+        session.permanent = False
 
-    @staticmethod
-    def check_hash(password: str, password_hash: str) -> bool:
-        return bcrypt.checkpw(
-            password.encode('utf-8'), 
-            password_hash.encode('utf-8')
-        )
+def logout_user():
+    """Logs out the user by removing them from the session."""
+    session.pop(USER_SESSION_KEY, None)
+
+def user_logged_in() -> bool:
+    """Checks if a user is currently logged in."""
+    return USER_SESSION_KEY in session
+
+def current_user() -> 'User':
+    """Returns the currently logged-in user, or None."""
+    username = session.get(USER_SESSION_KEY)
+    if not username:
+        return None
+
+    return User.get(username=username)

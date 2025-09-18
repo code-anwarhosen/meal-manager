@@ -11,7 +11,7 @@
 
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <style>
         .meal-pattern {
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
@@ -24,6 +24,37 @@
 </head>
 
 <body class="meal-pattern">
+
+    <!-- Flash Messages - Place right after <body> tag -->
+    <div class="fixed top-20 left-4 z-50 space-y-2 w-80 max-w-full">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash-message p-4 rounded-lg shadow-lg border-l-4 flex items-center justify-between
+                    {% if category == 'error' %}bg-red-50 border-red-500 text-red-700
+                    {% elif category == 'success' %}bg-green-50 border-green-500 text-green-700
+                    {% else %}bg-blue-50 border-blue-500 text-blue-700{% endif %}"
+                    role="alert">
+
+                    <div class="flex items-center">
+                        {% if category == 'error' %}
+                            <i class="fas fa-exclamation-circle mr-3"></i>
+                        {% elif category == 'success' %}
+                            <i class="fas fa-check-circle mr-3"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle mr-3"></i>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+
+                    <button class="flash-close ml-4 text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endwith %}
+    </div>
+
+
     <!-- Navigation Header -->
     <header class="bg-gradient-to-r from-blue-500 to-green-500 text-white shadow-md">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -37,6 +68,7 @@
                 <a href="{{ url_for('main.group', id=1) }}">Temp-Group</a>
                 <a href="{{ url_for('user.login') }}">Login</a>
                 <a href="{{ url_for('user.register') }}">Register</a>
+                <a href="{{ url_for('user.logout') }}">Logout</a>
             </div>
 
             <div class="flex items-center space-x-3">
@@ -56,6 +88,7 @@
         </div>
     </header>
 
+
     {% block content %}
     {% endblock content %}
 
@@ -69,6 +102,25 @@
 
     {% block javascript %}
     {% endblock javascript %}
-    
+
+    <script>
+        // Auto-hide flash messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto hide after 5 seconds
+            setTimeout(function() {
+                document.querySelectorAll('.flash-message').forEach(function(message) {
+                    message.remove();
+                });
+            }, 5000);
+
+            // Manual close functionality
+            document.querySelectorAll('.flash-close').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    this.closest('.flash-message').remove();
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>
