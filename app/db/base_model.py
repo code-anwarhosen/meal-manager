@@ -51,19 +51,24 @@ class BaseModel:
         if not cls._db:
             raise ValueError("Database not initialized. Call .init_db() first.")
 
+        if cls._table_initialized:
+            return
+        
         cls._table_initialized = cls._db.table_exists(cls.table_name)
-
+        
         if cls._table_initialized:
             return
 
         # Create table
         columns = ", ".join([f"{col} {definition}" for col, definition in cls.schema["columns"].items()])
-        sql = f"CREATE TABLE {cls.table_name} ({columns})"
-        cls._db.execute(sql)
+        sql = f"CREATE TABLE IF NOT EXISTS {cls.table_name} ({columns})"
 
         # Apply constraints
         for constraint in cls.schema.get("constraints", []):
-            cls._db.execute(constraint)
+            sql += ", " + constraint
+            
+        cls._db.execute(sql)
+        cls._table_initialized = True
 
     @classmethod
     def create(cls, **kwargs) -> Optional[int]:
