@@ -67,13 +67,6 @@
             <nav class="hidden md:flex items-center space-x-4 text-sm font-medium">
                 <a href="{{ url_for('main.home') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Home</a>
                 <a href="{{ url_for('main.group', id=1) }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Temp-Group</a>
-
-                {% if is_authenticated() %}
-                    <a href="{{ url_for('user.logout') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('user.login') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Login</a>
-                    <a href="{{ url_for('user.register') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Register</a>
-                {% endif %}
             </nav>
 
             <!-- Mobile menu button (hidden on desktop) -->
@@ -86,13 +79,40 @@
             <!-- User profile (visible on both mobile and desktop) -->
             <div class="flex items-center space-x-3">
                 <div class="relative">
-                    <button class="flex items-center focus:outline-none">
+                    <!-- Profile Button -->
+                    <button id="profileDropdownButton" class="flex items-center focus:outline-none">
                         <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
                             <span class="text-white font-semibold">
                                 <i class="fas fa-user"></i>
                             </span>
                         </div>
                     </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdown" class="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden border border-gray-200">
+                        {% if is_authenticated() %}
+                            <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-user mr-2"></i>Account
+                            </a>
+                            <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+
+                            <div class="border-t my-1"></div>
+                            <a href="{{ url_for('user.logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        {% else %}
+
+                            <!-- Show these when user is not logged in -->
+                            <a href="{{ url_for('user.login') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Login
+                            </a>
+                            <a href="{{ url_for('user.register') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-user-plus mr-2"></i>Register
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,13 +122,6 @@
             <nav class="flex flex-col justify-center items-center space-y-2">
                 <a href="{{ url_for('main.home') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Home</a>
                 <a href="{{ url_for('main.group', id=1) }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Temp-Group</a>
-
-                {% if is_authenticated() %}
-                    <a href="{{ url_for('user.logout') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('user.login') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Login</a>
-                    <a href="{{ url_for('user.register') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Register</a>
-                {% endif %}
             </nav>
         </div>
     </header>
@@ -128,58 +141,94 @@
     {% block javascript %}
     {% endblock javascript %}
 
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         // Auto-hide flash messages after 5 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            // Auto hide after 5 seconds
-            setTimeout(function() {
-                document.querySelectorAll('.flash-message').forEach(function(message) {
-                    message.remove();
-                });
-            }, 5000);
+        setTimeout(function() {
+            document.querySelectorAll('.flash-message').forEach(function(message) {
+                message.remove();
+            });
+        }, 5000);
 
-            // Manual close functionality
-            document.querySelectorAll('.flash-close').forEach(function(button) {
-                button.addEventListener('click', function() {
-                    this.closest('.flash-message').remove();
+        // Manual close functionality
+        document.querySelectorAll('.flash-close').forEach(function(button) {
+            button.addEventListener('click', function() {
+                this.closest('.flash-message').remove();
+            });
+        });
+
+
+
+
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+
+                // Toggle between hamburger and close icon
+                const icon = mobileMenuButton.querySelector('i');
+                if (mobileMenu.classList.contains('hidden')) {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                } else {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                }
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!mobileMenu.contains(event.target) &&
+                    !mobileMenuButton.contains(event.target) &&
+                    !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        }
+
+
+
+        // Profile dropdown functionality
+        const dropdownButton = document.getElementById('profileDropdownButton');
+        const dropdownMenu = document.getElementById('profileDropdown');
+
+        if (dropdownButton && dropdownMenu) {
+            // Toggle dropdown on button click
+            dropdownButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!dropdownMenu.contains(e.target) && !dropdownButton.contains(e.target)) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+
+            // Close dropdown when clicking on a menu item
+            dropdownMenu.querySelectorAll('a').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    dropdownMenu.classList.add('hidden');
                 });
             });
 
+            // Close dropdown when pressing Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !dropdownMenu.classList.contains('hidden')) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        }
 
-
-            // Mobile menu functionality
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-
-            if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('hidden');
-
-                    // Toggle between hamburger and close icon
-                    const icon = mobileMenuButton.querySelector('i');
-                    if (mobileMenu.classList.contains('hidden')) {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    } else {
-                        icon.classList.remove('fa-bars');
-                        icon.classList.add('fa-times');
-                    }
-                });
-
-                // Close menu when clicking outside
-                document.addEventListener('click', function(event) {
-                    if (!mobileMenu.contains(event.target) &&
-                        !mobileMenuButton.contains(event.target) &&
-                        !mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                        const icon = mobileMenuButton.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                });
-            }
-        });
-    </script>
+    });
+</script>
 
 </body>
 </html>
