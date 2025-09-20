@@ -53,21 +53,23 @@ class BaseModel:
 
         if cls._table_initialized:
             return
-        
+
         cls._table_initialized = cls._db.table_exists(cls.table_name)
-        
+
         if cls._table_initialized:
             return
 
-        # Create table
+        # Apply columns
         columns = ", ".join([f"{col} {definition}" for col, definition in cls.schema["columns"].items()])
-        sql = f"CREATE TABLE IF NOT EXISTS {cls.table_name} ({columns})"
 
         # Apply constraints
         for constraint in cls.schema.get("constraints", []):
-            sql += ", " + constraint
-            
+            columns += ", " + constraint
+
+        # Create table
+        sql = f"CREATE TABLE IF NOT EXISTS  {cls.table_name} ({columns});"
         cls._db.execute(sql)
+
         cls._table_initialized = True
 
     @classmethod
