@@ -9,7 +9,7 @@ bp = Blueprint('main', __name__)
 @login_required
 def home():
     user = current_user()
-    
+
     groups = Group.objects.filter(admin_user_id=user.id).all() # type: ignore
     return render_template('dashboard.html', groups=groups)
 
@@ -17,7 +17,15 @@ def home():
 @bp.route('/group/<id>/')
 @login_required
 def group(id):
-    return render_template('group.html')
+
+    id = int(id) if id.isdecimal() else id
+
+    group = Group.get(id=id)
+    if not group:
+        flash("Group not found!", 'error')
+        return redirect(url_for('main.home'))
+
+    return render_template('group.html', group=group)
 
 
 @bp.route('/create/group/', methods=['POST'])

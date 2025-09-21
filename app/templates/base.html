@@ -66,7 +66,6 @@
             <!-- Desktop Navigation (hidden on mobile) -->
             <nav class="hidden md:flex items-center space-x-4 text-sm font-medium">
                 <a href="{{ url_for('main.home') }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Home</a>
-                <a href="{{ url_for('main.group', id=1) }}" class="px-3 py-1 rounded hover:bg-white/20 transition">Temp-Group</a>
             </nav>
 
             <!-- Mobile menu button (hidden on desktop) -->
@@ -121,7 +120,6 @@
         <div id="mobile-menu" class="hidden md:hidden bg-gradient-to-r from-blue-500 to-green-500 px-4 py-2">
             <nav class="flex flex-col justify-center items-center space-y-2">
                 <a href="{{ url_for('main.home') }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Home</a>
-                <a href="{{ url_for('main.group', id=1) }}" class="px-3 py-2 rounded hover:bg-white/20 transition">Temp-Group</a>
             </nav>
         </div>
     </header>
