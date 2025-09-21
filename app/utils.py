@@ -1,6 +1,8 @@
 from flask import session, redirect, url_for, flash
 from functools import wraps
 from app.models import User
+from typing import Union
+import base64
 
 
 # ---------- Auth: Session ----------
@@ -57,3 +59,21 @@ def current_user():
 
 
 
+class Encoding:
+    @classmethod
+    def get_base64_id(cls, id: Union[int, str]) -> str:
+        id_bytes = str(id).encode()
+        
+        base64_id = base64.urlsafe_b64encode(id_bytes)
+        return base64_id.decode()
+
+    @classmethod
+    def get_orginal_id(cls, base64_id: str) -> Union[str, int]:
+        base64_bytes = str(base64_id).encode()
+        
+        orginal_id = base64.urlsafe_b64decode(base64_bytes).decode()
+        
+        if orginal_id.isnumeric():
+            return int(orginal_id)
+        
+        return orginal_id

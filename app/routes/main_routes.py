@@ -8,7 +8,10 @@ bp = Blueprint('main', __name__)
 @bp.route('/')
 @login_required
 def home():
-    return render_template('dashboard.html')
+    user = current_user()
+    
+    groups = Group.objects.filter(admin_user_id=user.id).all() # type: ignore
+    return render_template('dashboard.html', groups=groups)
 
 
 @bp.route('/group/<id>/')
@@ -35,7 +38,7 @@ def create_group():
             Group.create(
                 title=group_name,
                 description=group_description,
-                admin_user_id=user.id
+                admin_user_id=user.id # type: ignore
             )
             flash(f"{group_name} create successful!", "success")
 

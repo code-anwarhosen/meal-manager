@@ -19,8 +19,12 @@ class BaseModel:
     # These should be defined in subclasses
     table_name: str = None # type: ignore
     schema = {
-        "columns": {},
-        "constraints": []
+        "columns": {
+            # like 'id': 'INTEGER PRIMARY KEY'
+        },
+        "constraints": [
+            # like foreign, check, unique keys but not related to create, update or drop
+        ]
     }
 
     # Class-level database connection
