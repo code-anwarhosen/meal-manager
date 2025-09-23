@@ -2,7 +2,7 @@ from app import create_app
 
 app = create_app()
 
-from app.db import BaseModel
+from sqlite_orm.db import BaseModel
 with app.app_context():
     from config import Config
     BaseModel.init_db(db_path=Config.DATABASE)

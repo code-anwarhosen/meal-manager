@@ -6,6 +6,12 @@ import base64
 
 
 # ---------- Auth: Session ----------
+def current_user():
+    username = Auth.get_username()
+
+    return User.get(username=username)
+
+
 class Auth:
     USER_SESSION_KEY = 'user__name'
 
@@ -28,14 +34,23 @@ class Auth:
         session.clear()
 
     @classmethod
-    def get_username(cls):
+    def get_username(cls) -> str:
         """return username from session"""
         return session.get(cls.USER_SESSION_KEY, None)
 
     @classmethod
     def is_authenticated(cls) -> bool:
         """Checks if a user is currently logged in."""
-        return cls.USER_SESSION_KEY in session
+        user = current_user()
+        if not user:
+            return False
+        
+        session_username = cls.get_username()
+        
+        if session_username and user.username == session_username:
+            return True
+        
+        return False
 
 
 def login_required(func):
@@ -50,13 +65,6 @@ def login_required(func):
             return redirect(url_for('user.login'))
 
     return wrapper
-
-
-def current_user():
-    username = Auth.get_username()
-
-    return User.get(username=username)
-
 
 
 class Encoding:

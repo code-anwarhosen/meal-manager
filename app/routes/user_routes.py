@@ -22,7 +22,7 @@ def login():
         
         user = User.get(username=phone)
 
-        if user and User.check_password(password, user.password_hash):
+        if user and user.check_password(password):
             Auth.login_user(user.username, remember=remember)
             flash('Login successful!', 'success')
             return redirect(url_for('main.home'))
@@ -72,13 +72,11 @@ def register():
             flash(f"User already exists with this username!")
             return redirect(url_for('user.register'))
 
-        pw_hash = User.make_password(password)  # Or generate_password_hash
-
         try:
             user_id = User.create(
                 username=phone,
                 name=name,
-                password_hash=pw_hash
+                password_hash=User.make_password(password)
             )
         except Exception as e:
             flash(f'Error: {e}')

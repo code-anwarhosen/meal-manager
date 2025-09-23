@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, request, redirect, url_for
 from app.utils import login_required, current_user
-from app.models import Group
+from app.models import Group, UserGroup, GroupRole
 
 
 bp = Blueprint('main', __name__)
@@ -9,8 +9,14 @@ bp = Blueprint('main', __name__)
 @login_required
 def home():
     user = current_user()
-
-    groups = Group.objects.filter(admin_user_id=user.id).all() # type: ignore
+    
+    groups = []
+    for ugm in UserGroup.objects.filter(user_id=user.id).all():
+        group = Group.objects.filter(id=ugm.group_id).first() # type: ignore
+        
+        if group:
+            groups.append(group)
+        
     return render_template('dashboard.html', groups=groups)
 
 
@@ -43,11 +49,12 @@ def create_group():
         user = current_user()
 
         try:
-            Group.create(
+            group = Group.create(
                 title=group_name,
                 description=group_description,
-                admin_user_id=user.id # type: ignore
+                admin_id=user.id # type: ignore
             )
+            UserGroup.create(user_id=user.id, group_id=group.id, role=GroupRole.ADMIN) # type: ignore
             flash(f"{group_name} create successful!", "success")
 
         except Exception as e:
