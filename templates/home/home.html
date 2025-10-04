@@ -3,7 +3,116 @@
 {% block title %}Dashboard{% endblock title %}
 
 {% block content %}
-    <main>
-        <h1>home</h1>
-    </main>
+<!-- Main Content -->
+<main class="p-4 pb-20 md:px-36">
+    <!-- Group Header -->
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <div class="flex justify-between items-start mb-3">
+            <div>
+                <h2 class="text-lg font-bold text-gray-900">{{ group.name }}</h2>
+                <p class="text-gray-600 text-sm">
+                    {{ group.members.count }} members • 
+                    You are {% if is_group_admin %} Admin {% else %} Member {% endif %}
+                </p>
+            </div>
+            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">Current Month</span>
+        </div>
+        
+        <!-- Month Selector -->
+        <div class="flex justify-between items-center">
+            <button class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="font-semibold text-gray-900">October 2024</span>
+            <button class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+            <p class="text-xl font-bold text-blue-600">8210</p>
+            <p class="text-gray-600 text-sm">Total Spending</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+            <p class="text-xl font-bold text-green-600">142</p>
+            <p class="text-gray-600 text-sm">Total Meals</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+            <p class="text-xl font-bold text-purple-600">57.82</p>
+            <p class="text-gray-600 text-sm">Cost per Meal</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+            <p class="text-xl font-bold text-orange-600">15</p>
+            <p class="text-gray-600 text-sm">Days Tracked</p>
+        </div>
+    </div>
+
+    <!-- Members Table -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-gray-200">
+            <h3 class="font-semibold text-gray-900">Member Summary</h3>
+        </div>
+        
+        <!-- Table Header -->
+        <div class="grid grid-cols-5 gap-4 p-4 border-b border-gray-200 bg-gray-50 text-xs font-medium text-gray-500 uppercase">
+            <div>Member</div>
+            <div class="text-center">Meals</div>
+            <div class="text-center">Spent</div>
+            <div class="text-center">Cost</div>
+            <div class="text-center">Balance</div>
+        </div>
+        
+        <!-- Table Rows -->
+        <div class="divide-y divide-gray-200">
+            <!-- Member 1 -->
+            <div class="grid grid-cols-5 gap-4 py-2 px-4 hover:bg-gray-50 items-center">
+                <div>
+                    <a href="user-detail.html?id=1" class="text-blue-600 hover:text-green-600">
+                        <span class="font-medium">Anwar Hosen</span>
+                    </a>
+                </div>
+                <div class="text-center">45</div>
+                <div class="text-center">2450</div>
+                <div class="text-center">2602</div>
+                <div class="text-center">
+                    <span class="text-green-600">+152</span>
+                </div>
+            </div>
+
+            <!-- Member 2 -->
+            <div class="grid grid-cols-5 gap-4 py-2 px-4 hover:bg-gray-50 items-center">
+                <div>
+                    <a href="user-detail.html?id=2" class="text-blue-600 hover:text-green-600">
+                        <span class="font-medium">Mark Cuban</span>
+                    </a>
+                </div>
+                <div class="text-center">38</div>
+                <div class="text-center">1890</div>
+                <div class="text-center">2197</div>
+                <div class="text-center">
+                    <span class="text-red-600">-307</span>
+                </div>
+            </div>
+
+            <!-- Member 3 -->
+            <div class="grid grid-cols-5 gap-4 py-2 px-4 hover:bg-gray-50 items-center">
+                <div>
+                    <a href="user-detail.html?id=3" class="text-blue-600 hover:text-green-600">
+                        <span class="font-medium">Sarah Hosen</span>
+                    </a>
+                </div>
+                <div class="text-center">42</div>
+                <div class="text-center">2150</div>
+                <div class="text-center">2428</div>
+                <div class="text-center">
+                    <span class="text-green-600">+278</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
 {% endblock content %}
