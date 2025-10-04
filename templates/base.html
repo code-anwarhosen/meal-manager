@@ -1,0 +1,108 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title> {% block title %}{% endblock title %} - Meal Manager</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    {% block css %}{% endblock css %}
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Django Messages -->
+    <div class="fixed top-20 right-4 z-50 space-y-2 w-80 max-w-full">
+        {% for message in messages %}
+            <div class="flash-message p-4 rounded-lg shadow-lg border-l-4 flex items-center justify-between
+                {% if message.tags == 'error' %}bg-red-50 border-red-500 text-red-700
+                {% elif message.tags == 'success' %}bg-green-50 border-green-500 text-green-700
+                {% else %}bg-blue-50 border-blue-500 text-blue-700{% endif %}"
+                role="alert">
+
+                <div class="flex items-center">
+                    {% if message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle mr-3"></i>
+                    {% elif message.tags == 'success' %}
+                        <i class="fas fa-check-circle mr-3"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle mr-3"></i>
+                    {% endif %}
+                    <span>{{ message }}</span>
+                </div>
+
+                <button class="flash-close ml-4 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    {% if user.is_authenticated %}
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 p-2">
+        <div class="flex justify-between items-center px-4">
+            <div>
+                <h1 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-utensils text-blue-500 mr-2"></i>Meal Manager
+                </h1>
+            </div>
+            
+            <!-- User Menu -->
+            <div class="relative">
+                <!-- User Icon Button -->
+                <button id="userMenuButton" class="w-10 h-10 rounded-full bg-blue-300 flex items-center justify-center hover:bg-blue-200 transition">
+                    <span class="text-lg font-bold">{{ user.first_name.0|upper }}</span>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50 hidden">
+                    <a href="/admin/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-user mr-2 text-gray-500"></i>Admin
+                    </a>
+                    <div class="border-t my-1"></div>
+                    <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-sign-out-alt mr-2 text-gray-500"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+    
+
+    {% block content %}{% endblock content %}
+
+    {% if user.is_authenticated %}
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 shadow-lg">
+        <div class="flex justify-around">
+            <a href="{% url 'home' %}" class="flex flex-col items-center p-2 rounded-lg text-blue-500">
+                <i class="fas fa-home mb-1"></i>
+                <span class="text-xs">Home</span>
+            </a>
+
+            <a href="meals.html" class="flex flex-col items-center p-2 rounded-lg text-gray-500 hover:text-blue-500">
+                <i class="fas fa-utensils mb-1"></i>
+                <span class="text-xs">Meals</span>
+            </a>
+
+            <a href="expenses.html" class="flex flex-col items-center p-2 rounded-lg text-gray-500 hover:text-blue-500">
+                <i class="fas fa-receipt mb-1"></i>
+                <span class="text-xs">Expenses</span>
+            </a>
+        </div>
+    </nav>
+    {% endif %}
+
+    <script src="{% static 'js/script.js' %}"></script>
+
+    {% block js %}{% endblock js %}
+</body>
+</html>

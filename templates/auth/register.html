@@ -1,1 +1,108 @@
-<h1>Register</h1>
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock title %}
+
+{% block content %}
+<main class="flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-green-500 to-green-300 p-6 text-center">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-white">Join Meal Manager</h1>
+            <p class="text-blue-100 mt-1">Create your account</p>
+        </div>
+        
+        <!-- Registration Form -->
+        <form class="p-6 space-y-4" method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            
+            <!-- Full Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-user text-gray-400"></i>
+                    </div>
+
+                    <input type="text" name="full_name" value="{{ fullname }}" required 
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="Enter your full name">
+                </div>
+            </div>
+            
+            <!-- Phone Number -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-phone text-gray-400"></i>
+                    </div>
+
+                    <input type="number" name="phone" value="{{ phone }}" required 
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="11-digit phone number">
+                </div>
+            </div>
+            
+            <!-- Email (Optional) -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-gray-500">(Optional)</span>
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-envelope text-gray-400"></i>
+                    </div>
+
+                    <input type="email" name="email" value="{{ email }}"
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="your@email.com">
+                </div>
+            </div>
+            
+            <!-- Password -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+
+                    <input type="password" name="password" required 
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="Create a password">
+                </div>
+            </div>
+            
+            <!-- Confirm Password -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+
+                    <input type="password" name="confirm_password" required 
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="Confirm your password">
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition shadow-md">
+                <i class="fas fa-user-plus mr-2"></i>Create Account
+            </button>
+        </form>
+        
+        <!-- Login Link -->
+        <div class="bg-gray-50 p-4 text-center border-t border-gray-200">
+            <p class="text-sm text-gray-600">
+                Already have an account? 
+                <a href="{% url 'login' %}" class="text-blue-500 font-semibold hover:text-blue-600 transition">Sign In</a>
+            </p>
+        </div>
+    </div>
+
+</main>
+{% endblock content %}

@@ -14,7 +14,7 @@ def register_user(request):
         phone = request.POST.get('phone')
         email = request.POST.get('email')
         
-        password1 = request.POST.get('password1')
+        password1 = request.POST.get('password')
         password2 = request.POST.get('confirm_password')
         
         context = {
@@ -38,7 +38,7 @@ def register_user(request):
         if User.objects.filter(username=phone).exists():
             errors.append('User with the phone number already exists.')
         
-        if User.objects.filter(email=email).exists():
+        if email and User.objects.filter(email=email).exists():
             errors.append('User with the email already exists.')
         
         if errors:
@@ -55,7 +55,7 @@ def register_user(request):
             user.set_password(password1)
             user.save()
             
-            messages.success(request, 'Registration successful! You can now login.')
+            messages.success(request, 'Registration successful! You can now login now.')
             return redirect('login')
             
         except Exception as e:
@@ -86,11 +86,13 @@ def login_user(request):
             
             # else:
             #     return redirect('setup-group')
+            
             return redirect('home')
             
         else:
             messages.error(request, 'Invalid username or password!')
-    
+            return render(request, 'auth/login.html', {'phone': phone})
+        
     return render(request, 'auth/login.html')
 
 

@@ -1,1 +1,76 @@
-<h1>Login</h1>
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock title %}
+
+{% block content %}
+<main class="h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-500 to-blue-300 p-6 text-center">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-utensils text-white text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-white">Meal Manager</h1>
+            <p class="text-blue-100 mt-1">Sign in to your account</p>
+        </div>
+        
+        <!-- Login Form -->
+        <form class="p-6 space-y-4" method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            
+            <!-- Phone Number -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-phone text-gray-400"></i>
+                    </div>
+
+                    <input type="number" name="phone" value="{{ phone }}" required 
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="Your phone number">
+                </div>
+            </div>
+            
+            <!-- Password -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+
+                    <input type="password" name="password" required 
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="Your password">
+                </div>
+            </div>
+            
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input type="checkbox" name="remember" class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="rememberMe" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                </div>
+
+                <a href="#" class="text-sm text-blue-500 hover:text-blue-600 transition">Forgot password?</a>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition shadow-md">
+                <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+            </button>
+        </form>
+
+        
+        <!-- Registration Link -->
+        <div class="bg-gray-50 p-4 text-center border-t border-gray-200">
+            <p class="text-sm text-gray-600">
+                Don't have an account? 
+                <a href="{% url 'register' %}" class="text-blue-500 font-semibold hover:text-blue-600 transition">Register Now</a>
+            </p>
+        </div>
+    </div>
+
+</main>
+{% endblock content %}
