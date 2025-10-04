@@ -6,7 +6,7 @@ import secrets
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
     join_code = models.CharField(max_length=7, unique=True)
     admin = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_group')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -122,3 +122,18 @@ class GroceryExpense(models.Model):
             
 #     def __str__(self):
 #         return f"{self.user.username} - {self.year}-{self.month:02d}"
+
+
+# Signals to automatically create/update related records
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+
+@receiver(post_save, sender=Group)
+def create_admin_membership(sender, instance, created, **kwargs):
+    """Automatically add admin as a group member when group is created"""
+    if created:
+        GroupMember.objects.create(
+            user=instance.admin,
+            group=instance,
+            role='admin'
+        )

@@ -9,4 +9,9 @@ urlpatterns = [
     
     # main views
     path('', views.home, name='home'),
+    
+    # group
+    path('setup-group/', views.setup_group, name='setup-group'),
+    path('create-new-group/', views.create_group, name='create-group'),
+    path('join-existing-group/', views.join_group, name='join-group'),
 ]

@@ -64,7 +64,6 @@ def register_user(request):
     
     return render(request, 'auth/register.html')
     
-    
 
 def login_user(request):
     if request.user.is_authenticated:
@@ -84,10 +83,8 @@ def login_user(request):
             if hasattr(user, 'group_membership'):
                 return redirect('home')
             
-            # else:
-            #     return redirect('setup-group')
-            
-            return redirect('home')
+            else:
+                return redirect('setup-group')
             
         else:
             messages.error(request, 'Invalid username or password!')
