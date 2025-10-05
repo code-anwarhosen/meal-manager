@@ -7,11 +7,8 @@ from app.models import Group, GroupMember
 @login_required
 def setup_group(request):
     """Main setup page - choose create or join"""
-    user = request.user
-    
     # If user already has group, redirect to home
-    if hasattr(user, 'group_membership'):
-        messages.info(request, 'You already have a group!')
+    if hasattr(request.user, 'group_membership'):
         return redirect('home')
     
     return render(request, 'group/setup_group.html')
@@ -24,7 +21,6 @@ def create_group(request):
     
     # If user already has group, redirect to home
     if hasattr(user, 'group_membership'):
-        messages.info(request, 'You already have a group!')
         return redirect('home')
     
     if request.method == 'POST':
@@ -54,7 +50,6 @@ def join_group(request):
     user = request.user
     
     if hasattr(user, 'group_membership'):
-        messages.info(request, 'You already have a group!')
         return redirect('home')
     
     if request.method == 'POST':

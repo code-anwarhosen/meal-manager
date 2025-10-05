@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 
 def register_user(request):
     if request.user.is_authenticated:
-        messages.info(request, 'Already logged in!')
         return redirect('home')
     
     if request.method == 'POST':
@@ -67,7 +66,6 @@ def register_user(request):
 
 def login_user(request):
     if request.user.is_authenticated:
-        messages.info(request, 'Already logged in!')
         return redirect('home')
         
     if request.method == 'POST':

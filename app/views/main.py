@@ -9,7 +9,6 @@ def home(request):
     user = request.user
     
     if not hasattr(user, 'group_membership'):
-        messages.info(request, 'Create or join a group to access dashboard')
         return redirect('setup-group')
             
     return render(request, 'home/home.html')

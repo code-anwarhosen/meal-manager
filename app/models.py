@@ -47,6 +47,7 @@ class MealEntry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='meal_entries')
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='meal_entries')
     date = models.DateField()
+    
     breakfast = models.IntegerField(default=0, 
         validators=[MinValueValidator(0), MaxValueValidator(3)], 
         help_text="Number of breakfast meals (0=absent, 1=present, 2+=with guests)"
@@ -59,6 +60,7 @@ class MealEntry(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(3)],
         help_text="Number of dinner meals (0=absent, 1=present, 2+=with guests)"
     )
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -103,25 +105,6 @@ class GroceryExpense(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.item_name} - ₹{self.cost}"
-
-
-# class MonthlySummary(models.Model):
-#     """Optional: Pre-calculated monthly summaries for performance"""
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='monthly_summaries')
-#     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='monthly_summaries')
-#     year = models.IntegerField()
-#     month = models.IntegerField()  # 1-12
-#     total_meals = models.IntegerField(default=0)
-#     total_spent = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-#     total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-#     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    
-#     class Meta:
-#         unique_together = ['user', 'group', 'year', 'month']
-#         ordering = ['-year', '-month']
-            
-#     def __str__(self):
-#         return f"{self.user.username} - {self.year}-{self.month:02d}"
 
 
 # Signals to automatically create/update related records
