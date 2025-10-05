@@ -72,16 +72,13 @@ class MealEntry(models.Model):
             models.Index(fields=['group', 'date']),
         ]
     
-    def total_meals(self):
+    @property
+    def total(self):
         """Calculate total meals for the day"""
         return self.breakfast + self.lunch + self.dinner
     
-    def cost(self, meal_rate: float):
-        """Calculate cost for this meal entry"""
-        return self.total_meals() * meal_rate
-    
     def __str__(self):
-        return f"{self.user.username} - {self.date} - {self.total_meals()} meals"
+        return f"{self.user.username} - {self.date} - {self.total} meals"
 
 
 class GroceryExpense(models.Model):
