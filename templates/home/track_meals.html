@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Add Meals{% endblock title %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="p-4 pb-20 md:px-36">
+    <!-- Date Selection -->
+    <div class="bg-white rounded-lg shadow-sm p-4">
+        <div class="flex justify-between items-start mb-3">
+            <h2 class="text-lg font-bold text-gray-700">Track Meals</h2>
+        </div>
+
+        <div class="flex justify-between items-center mb-4">
+            <a href="?date=" class="text-gray-500 hover:text-gray-700 p-2">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            
+            <div class="text-center flex-1">
+                <h2 class="text-lg font-semibold text-gray-700">{{ meal_date|date:"F d, Y" }}</h2>
+                <p class="text-sm text-gray-600">{{ meal_date|date:"l" }}</p>
+            </div>
+            
+            <a href="?date=" class="text-gray-500 hover:text-gray-700 p-2">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+
+
+    <!-- Meal Entry Form -->
+    <form action="{% url 'track-meals' %}" method="POST" class="bg-white rounded-lg shadow-sm overflow-hidden">
+        {% csrf_token %}
+
+        <input type="hidden" name="meal_date" value="{{ meal_date|date:'Y-m-d' }}">
+
+        <!-- Table Header -->
+        <div class="grid grid-cols-4 gap-4 p-4 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+            <div>Member</div>
+            <div class="text-center">Breakfast</div>
+            <div class="text-center">Lunch</div>
+            <div class="text-center">Dinner</div>
+        </div>
+
+        <!-- Member Rows -->
+        <div class="divide-y divide-gray-200">
+            <!-- Members -->
+            {% for member in group.members_list %}
+            <div class="grid grid-cols-4 gap-4 p-4 items-center hover:bg-gray-50">
+                <div class="flex items-center">
+                    <span class="font-medium">
+                        {{ member.user.first_name }}
+                        {% if member.user == user %}
+                            (You)
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="text-center">
+                    <input type="number" name="member_{{ member.pk }}_breakfast" min="0" max="3" value="{{ member.breakfast }}" 
+                            class="w-16 border border-gray-300 rounded p-2 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div class="text-center">
+                    <input type="number" name="member_{{ member.pk }}_lunch" min="0" max="3" value="{{ member.lunch }}" 
+                            class="w-16 border border-gray-300 rounded p-2 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div class="text-center">
+                    <input type="number" name="member_{{ member.pk }}_dinner" min="0" max="3" value="{{ member.dinner }}" 
+                            class="w-16 border border-gray-300 rounded p-2 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit Section -->
+        <div class="p-4 bg-gray-50 border-t border-gray-200">
+            <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition shadow-md">
+                <i class="fas fa-save mr-2"></i> Save Meal Entries
+            </button>
+        </div>
+    </form>
+
+    <!-- Help Text -->
+    <div class="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <div class="flex items-start text-sm text-blue-800">
+            <i class="fas fa-info-circle mt-0.5 mr-2"></i>
+            <div>
+                <p class="font-medium">How to track meals:</p>
+                <ul class="mt-1 space-y-1">
+                    <li>• <strong>0</strong> = Didn't eat</li>
+                    <li>• <strong>1</strong> = One meal</li>
+                    <li>• <strong>1+</strong> = 1+ meal (or had a guest)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

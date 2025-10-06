@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from app.models import GroupMember, MealEntry
 from app.utils import group_required, group_summary, member_summary
 from datetime import datetime
 
@@ -8,11 +9,11 @@ from datetime import datetime
 @login_required
 @group_required
 def home(request):
-    # Check if user has group
     user = request.user
     current_date = datetime.now()
     
     # get the group with needed attributes for dashboard 
+    # group_summary(..) -> Group
     group = group_summary(
         group=user.group_membership.group, 
         month=current_date.month, 
@@ -22,7 +23,7 @@ def home(request):
     # list of all member of the group
     members_list = group.members.all().select_related('user')
     
-    # add needed attributes in the dashboard for each member of the group
+    # add needed attributes for the dashboard to each member of the group
     # member: GroupMember
     for mem_idx in range(len(members_list)):
         
@@ -50,3 +51,97 @@ def home(request):
         'current_month': current_date.strftime('%B %Y')
     }
     return render(request, 'home/dashboard.html', context)
+
+
+def handle_add_update_meals(request, group):
+    date_str = request.POST.get('meal_date')
+    
+    if not date_str:
+        messages.error(request, 'Date is required')
+        return redirect('track-meals')
+    
+    try:
+        # Get all members in the group
+        members = GroupMember.objects.filter(group=group)
+        
+        # track if creating or updating
+        is_new_entry = False
+        
+        # Process each member's meal data
+        for member in members:
+            breakfast = request.POST.get(f'member_{member.pk}_breakfast')
+            lunch = request.POST.get(f'member_{member.pk}_lunch')
+            dinner = request.POST.get(f'member_{member.pk}_dinner')
+            
+            # Convert to integers with validation
+            try:
+                breakfast_int = int(breakfast) if breakfast else 0
+                lunch_int = int(lunch) if lunch else 0
+                dinner_int = int(dinner) if dinner else 0
+                
+                # Validate within range (0-3 as per model)
+                breakfast_int = max(0, min(3, breakfast_int))
+                lunch_int = max(0, min(3, lunch_int))
+                dinner_int = max(0, min(3, dinner_int))
+                
+            except ValueError:
+                messages.error(request, 'Invalid meal value. Please enter numbers only.')
+                return redirect('track-meals')
+            
+            # update_or_create with defaults parameter
+            _, is_new_entry = MealEntry.objects.update_or_create(
+                user=member.user,
+                group=group,
+                date=date_str,
+                defaults={
+                    'breakfast': breakfast_int,
+                    'lunch': lunch_int,
+                    'dinner': dinner_int,
+                }
+            )
+        
+        action = 'added' if is_new_entry else 'updated'
+        messages.success(request, f'Meal entries {action} for {date_str}')
+        return redirect('track-meals')
+        
+    except Exception as e:
+        messages.error(request, f'Error saving meals: {str(e)}')
+        return redirect('track-meals')
+
+
+
+@login_required
+@group_required
+def track_meals(request):
+    user = request.user
+    group = user.group_membership.group
+    
+    meal_date = datetime.now().date()
+    
+    # handle create/update MealEntry
+    if request.method == 'POST':
+        handle_add_update_meals(request, group)
+        
+    
+    # list of all member of the group
+    members_list = group.members.all().select_related('user')
+    
+    # add needed attributes for the dashboard to each member of the group
+    # member: GroupMember
+    for mem_idx in range(len(members_list)):
+        user = members_list[mem_idx].user
+        meal = user.meal_entries.filter(date=meal_date).first()
+        
+        members_list[mem_idx].breakfast = meal.breakfast if meal else 0
+        members_list[mem_idx].lunch = meal.lunch if meal else 0
+        members_list[mem_idx].dinner = meal.dinner if meal else 0
+    
+    # add members_list attribute to group 
+    # to be able to access all memner of the group in template
+    group.members_list = members_list
+    
+    context = {
+        'group': group,
+        'meal_date': meal_date,
+    }
+    return render(request, 'home/track_meals.html', context)

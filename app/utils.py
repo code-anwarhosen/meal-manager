@@ -52,7 +52,7 @@ def group_summary(group, month: int, year: int):
     # Adding attributes to access in dashboard templates
     group.total_expenses = total_group_expenses
     group.total_meals = total_group_meals
-    group.cost_per_meal = cost_per_meal
+    group.cost_per_meal = round(cost_per_meal, 2)
     
     return group
 

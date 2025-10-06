@@ -49,7 +49,7 @@
     <header class="bg-white shadow-sm border-b border-gray-200 p-2">
         <div class="flex justify-between items-center px-4">
             <div>
-                <h1 class="text-xl font-bold text-gray-900">
+                <h1 class="text-xl font-bold text-gray-800">
                     <i class="fas fa-utensils text-blue-500 mr-2"></i>Meal Manager
                 </h1>
             </div>
@@ -57,8 +57,8 @@
             <!-- User Menu -->
             <div class="relative">
                 <!-- User Icon Button -->
-                <button id="userMenuButton" class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center hover:bg-blue-400 transition">
-                    <span class="text-lg font-bold">{{ user.first_name.0|upper }}</span>
+                <button id="userMenuButton" class="w-10 h-10 rounded-full bg-blue-300 flex items-center justify-center hover:bg-blue-200 transition">
+                    <span class="text-lg font-bold text-gray-800">{{ user.first_name.0|upper }}</span>
                 </button>
                 
                 <!-- Dropdown Menu -->
@@ -88,7 +88,7 @@
                 <span class="text-xs">Home</span>
             </a>
 
-            <a href="meals.html" class="flex flex-col items-center p-2 rounded-lg text-gray-500 hover:text-blue-500">
+            <a href="{% url 'track-meals' %}" class="flex flex-col items-center p-2 rounded-lg text-gray-500 hover:text-blue-500">
                 <i class="fas fa-utensils mb-1"></i>
                 <span class="text-xs">Meals</span>
             </a>
