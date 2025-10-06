@@ -3,14 +3,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from app.models import GroupMember, MealEntry
 from app.utils import group_required, group_summary, member_summary
-from datetime import datetime
+from datetime import date, timedelta
 
 
 @login_required
 @group_required
 def home(request):
     user = request.user
-    current_date = datetime.now()
+    current_date = date.today()
     
     # get the group with needed attributes for dashboard 
     # group_summary(..) -> Group
@@ -109,6 +109,25 @@ def handle_add_update_meals(request, group):
         return redirect('track-meals')
 
 
+def get_meal_date(request):
+    date_str = request.GET.get('date')
+    
+    meal_date = date.today()
+    try:
+        meal_date = date.fromisoformat(date_str)
+    except Exception as e:
+        pass
+    
+    dir = request.GET.get('dir')
+    one_day = timedelta(days=1)
+    
+    if dir == 'back':
+        meal_date = meal_date - one_day
+    elif dir == 'forward':
+        meal_date = meal_date + one_day
+        
+    return meal_date
+    
 
 @login_required
 @group_required
@@ -116,7 +135,10 @@ def track_meals(request):
     user = request.user
     group = user.group_membership.group
     
-    meal_date = datetime.now().date()
+    meal_date = get_meal_date(request)
+    if meal_date > date.today():
+        messages.info(request, "Can't access future date!")
+        return redirect('track-meals')
     
     # handle create/update MealEntry
     if request.method == 'POST':
@@ -136,8 +158,6 @@ def track_meals(request):
         members_list[mem_idx].lunch = meal.lunch if meal else 0
         members_list[mem_idx].dinner = meal.dinner if meal else 0
     
-    # add members_list attribute to group 
-    # to be able to access all memner of the group in template
     group.members_list = members_list
     
     context = {
