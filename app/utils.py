@@ -3,30 +3,30 @@ from django.shortcuts import redirect
 from app.models import MealEntry, GroceryExpense
 
 
-def member_summary(user, group, month, year):
+def member_summary(member, group, month, year):
     """Calculate monthly summary of a group member"""
     
-    meals = MealEntry.objects.filter(
-        user=user,
+    meals_list = MealEntry.objects.filter(
+        user=member.user,
         group=group,
         date__year=year,
         date__month=month
     )
     
-    groceries = GroceryExpense.objects.filter(
-        user=user,
+    groceries_list = GroceryExpense.objects.filter(
+        user=member.user,
         group=group,
         date__year=year,
         date__month=month
     )
     
     # Calculate meal totals
-    total_meals = sum(meal.total for meal in meals)
+    total_meals = sum(meal.total for meal in meals_list)
     
     # Calculate spending
-    total_spent = groceries.aggregate(Sum('cost'))['cost__sum'] or 0
+    total_spent = groceries_list.aggregate(Sum('cost'))['cost__sum'] or 0
     
-    return total_meals, total_spent
+    return total_meals, total_spent, meals_list, groceries_list
 
 
 def group_summary(group, month: int, year: int):

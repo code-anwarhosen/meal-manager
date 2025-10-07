@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}User Details{% endblock title %}
+
+{% block css %}
+<style>
+    .tab-active {
+        border-bottom: 3px solid #3b82f6;
+        color: #3b82f6;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<main class="p-2 pb-20 md:px-36">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-sm py-4 px-6 mb-2">
+        <div class="flex justify-between items-start mb-3">
+            <div>
+                <p class="text-gray-600 text-sm">Details of</p>
+                <h2 class="text-lg font-bold text-gray-700">
+                    {{ member.user.first_name }}
+                    {% if member.user == user %}(You){% endif %}
+                </h2>
+            </div>
+        </div>
+
+        <!-- Month Selector -->
+        <div class="flex justify-between items-center mb-2">
+            <button class="text-gray-500 hover:text-gray-700 p-2">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="text-lg font-semibold text-gray-700">{{ info_date|date:"F Y" }}</span>
+            <button class="text-gray-500 hover:text-gray-700 p-2">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- User Summary -->
+    <div class="bg-white rounded-lg shadow-sm p-4 border-b border-gray-200 mb-2">
+        <div class="grid grid-cols-2 gap-4 text-center">
+            <div>
+                <p class="text-xl font-bold text-blue-600">{{ member.total_meals }}</p>
+                <p class="text-gray-600 text-sm">Total Meals</p>
+            </div>
+            <div>
+                <p class="text-xl font-bold text-green-600">{{ member.total_spent }}</p>
+                <p class="text-gray-600 text-sm">Spent</p>
+            </div>
+            <div>
+                <p class="text-xl font-bold text-purple-600">{{ member.total_cost }}</p>
+                <p class="text-gray-600 text-sm">Cost</p>
+            </div>
+            <div>
+                <p class="text-xl font-bold text-green-600">{{ member.balance }}</p>
+                <p class="text-gray-600 text-sm">Balance</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Tabs -->
+    <nav class="bg-white border-b border-gray-200 rounded-tl-lg rounded-tr-lg">
+        <div class="flex">
+            <button class="tab-btn flex-1 py-3 text-center font-medium text-gray-600 hover:text-blue-500 transition tab-active" data-tab="meals">
+                <i class="fas fa-utensils mr-2"></i>Meals
+            </button>
+            <button class="tab-btn flex-1 py-3 text-center font-medium text-gray-600 hover:text-blue-500 transition" data-tab="groceries">
+                <i class="fas fa-shopping-cart mr-2"></i>Groceries
+            </button>
+        </div>
+    </nav>
+
+
+    <!-- Tab Content -->
+    <section>
+        <!-- Meals Tab -->
+        <div id="meals" class="tab-content">
+            <div class="bg-white shadow-sm overflow-hidden rounded-bl-lg rounded-br-lg">
+                <!-- Table Header -->
+                <div class="grid grid-cols-5 gap-1 p-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase">
+                    <div>Date</div>
+                    <div class="text-center">Breakfast</div>
+                    <div class="text-center">Lunch</div>
+                    <div class="text-center">Dinner</div>
+                    <div class="text-center">Actions</div>
+                </div>
+
+                <!-- Meal Rows -->
+                <div class="max-h-96 overflow-y-auto">
+                    <!-- Meals -->
+                    {% for meal in member.meals_list %}
+                    <div class="grid grid-cols-5 gap-1 p-3 border-b border-gray-100 hover:bg-gray-50 items-center text-sm">
+                        <div class="font-medium text-gray-600 date">{{ meal.date|date:"M d" }}</div>
+                        <div class="text-center breakfast">{{ meal.breakfast }}</div>
+                        <div class="text-center lunch">{{ meal.lunch }}</div>
+                        <div class="text-center dinner">{{ meal.dinner }}</div>
+
+                        <div class="text-center">
+                            <button class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-edit meal-edit-btn"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+                <!-- Monthly Total -->
+                <div class="grid grid-cols-5 gap-1 p-3 bg-gray-50 border-t border-gray-200 text-sm font-semibold">
+                    <div>Monthly Total</div>
+                    <div class="text-center">{{ member.months_total_breakfast }}</div>
+                    <div class="text-center">{{ member.months_total_lunch }}</div>
+                    <div class="text-center">{{ member.months_total_dinner }}</div>
+                    <div class="text-center">{{ member.total_meals }}</div>
+                </div>
+            </div>
+
+            <!-- Quick Edit Help -->
+            <div class="mt-4 bg-blue-50 rounded-lg p-3 border border-blue-200">
+                <div class="flex items-center text-sm text-blue-800">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <span>Click the edit button to update meal attendance for any day</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Groceries Tab -->
+        <div id="groceries" class="tab-content hidden">
+            <div class="bg-white shadow-sm overflow-hidden rounded-bl-lg rounded-br-lg mb-4">
+                <!-- Table Header -->
+                <div class="grid grid-cols-6 gap-2 p-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase">
+                    <div>Date</div>
+                    <div class="col-span-2">Item</div>
+                    <div class="text-center">Quantity</div>
+                    <div class="text-center">Cost</div>
+                    <div class="text-center">Actions</div>
+                </div>
+
+                <!-- Grocery Items -->
+                <div class="divide-y divide-gray-200">
+                    <!-- Items -->
+                    {% for grocery in member.groceries_list %}
+                    <div class="grid grid-cols-6 gap-2 p-3 hover:bg-gray-50 items-center text-sm">
+                        <div class="text-gray-600 date">{{ grocery.date|date:"M d" }}</div>
+                        <div class="col-span-2 font-medium grocery-name">{{ grocery.item_name }}</div>
+                        <div class="text-center text-gray-600 quantity">{{ grocery.quantity }}</div>
+                        <div class="text-center font-semibold text-red-600 grocery-cost">{{ grocery.cost }}</div>
+
+                        <div class="text-center flex justify-center space-x-2">
+                            <button class="text-green-500 hover:text-green-700" title="Approve">
+                                <i class="fas fa-check grocery-approve"></i>
+                            </button>
+
+                            <button class="text-blue-500 hover:text-blue-700" title="Edit">
+                                <i class="fas fa-edit grocery-edit"></i>
+                            </button>
+
+                            <button class="text-red-500 hover:text-red-700" title="Delete">
+                                <i class="fas fa-trash grocery-delete"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+                <!-- Monthly Total -->
+                <div class="grid grid-cols-6 gap-2 p-3 bg-gray-50 border-t border-gray-200 text-sm font-semibold">
+                    <div>Total</div>
+                    <div class="col-span-3"></div>
+                    <div class="text-center text-red-600">{{ member.total_spent }}</div>
+                    <div></div>
+                </div>
+            </div>
+
+            <!-- Add New Item -->
+            <button id="add-grocery-btn" class="w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition shadow-md">
+                <i class="fas fa-plus mr-2"></i> Add New Grocery Item
+            </button>
+        </div>
+    </section>
+
+
+
+    <!-- Meal Edit Modal -->
+    <div id="mealEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-sm mx-4">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="font-semibold text-gray-900">
+                    Edit Meals - <span id="modalDate">Oct 15</span>
+                </h3>
+            </div>
+
+            <!-- Modal Content -->
+            <form class="p-4" id="mealEditForm" method="POST" action="">
+
+                <div class="space-y-4">
+                    <!-- Breakfast -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Breakfast</label>
+                        <input type="number" id="edit_breakfast" name="breakfast" min="0" max="3"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Lunch -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Lunch</label>
+                        <input type="number" id="edit_lunch" name="lunch" min="0" max="3"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Dinner -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Dinner</label>
+                        <input type="number" id="edit_dinner" name="dinner" min="0" max="3"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="mt-6 mb-4 bg-gray-50 flex gap-4">
+                    <button type="button" id="closeMealModal"
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded font-semibold hover:bg-blue-600">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Grocery Edit Modal -->
+    <div id="groceryEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-md mx-4">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="font-semibold text-gray-900">
+                    Edit Grocery Item
+                </h3>
+            </div>
+
+            <!-- Modal Content -->
+            <form class="p-4" id="groceryEditForm" method="POST" action="">
+                <div class="space-y-4">
+                    <!-- Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <input type="date" id="edit_grocery_date" name="date"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+
+                    <!-- Item Name -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+                        <input type="text" id="edit_grocery_name" name="item_name"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                        <input type="text" id="edit_grocery_quantity" name="quantity"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+                                placeholder="e.g., 2 kg, 1 packet">
+                    </div>
+
+                    <!-- Cost -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cost</label>
+                        <input type="number" id="edit_grocery_cost" name="cost" min="0" step="0.01"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="mt-6 mb-4 bg-gray-50 flex gap-4">
+                    <button type="button" id="closeGroceryModal"
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded font-semibold hover:bg-blue-600">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Add Grocery Modal -->
+    <div id="addGroceryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg w-full max-w-md mx-4">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="font-semibold text-gray-900">
+                    Add New Grocery Item
+                </h3>
+            </div>
+
+            <!-- Modal Content -->
+            <form class="p-4" id="addGroceryForm" method="POST" action="">
+                <div class="space-y-4">
+                    <!-- Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <input type="date" name="date" id="groceryDate"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+
+                    <!-- Item Name -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+                        <input type="text" name="item_name"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+                                placeholder="e.g., Rice, Vegetables" required>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Quantity (Optional)</label>
+                        <input type="text" name="quantity"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+                                placeholder="e.g., 2 kg, 1 packet, 5 pieces">
+                    </div>
+
+                    <!-- Cost -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cost</label>
+                        <input type="number" name="cost" min="0" step="0.01"
+                                class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+                                placeholder="0.00" required>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="mt-6 mb-4 bg-gray-50 flex gap-4">
+                    <button type="button" id="closeAddGroceryModal"
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100 transition">
+                        Cancel
+                    </button>
+
+                    <button type="button" class="flex-1 px-4 py-2 bg-green-500 text-white rounded font-semibold hover:bg-green-600 transition">
+                        Add Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="{% static 'js/member_details.js' %}"></script>
+{% endblock content %}

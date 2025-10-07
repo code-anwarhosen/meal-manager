@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from app.models import GroupMember, MealEntry
+from datetime import date
+
+from app.models import GroupMember
 from app.utils import group_required, group_summary, member_summary
-from datetime import date, timedelta
+from .helpers import handle_add_update_meals, get_meal_date, get_member_details
 
 
 @login_required
@@ -27,8 +29,8 @@ def home(request):
     # member: GroupMember
     for mem_idx in range(len(members_list)):
         
-        total_meals, total_spent = member_summary(
-            user=members_list[mem_idx].user,    # members_list[mem_idx]: GroupMember
+        total_meals, total_spent, *_ = member_summary(
+            member=members_list[mem_idx],    # members_list[mem_idx]: GroupMember
             group=group, 
             month=current_date.month, 
             year=current_date.year
@@ -52,82 +54,6 @@ def home(request):
     }
     return render(request, 'home/dashboard.html', context)
 
-
-def handle_add_update_meals(request, group):
-    date_str = request.POST.get('meal_date')
-    
-    if not date_str:
-        messages.error(request, 'Date is required')
-        return redirect('track-meals')
-    
-    try:
-        # Get all members in the group
-        members = GroupMember.objects.filter(group=group)
-        
-        # track if creating or updating
-        is_new_entry = False
-        
-        # Process each member's meal data
-        for member in members:
-            breakfast = request.POST.get(f'member_{member.pk}_breakfast')
-            lunch = request.POST.get(f'member_{member.pk}_lunch')
-            dinner = request.POST.get(f'member_{member.pk}_dinner')
-            
-            # Convert to integers with validation
-            try:
-                breakfast_int = int(breakfast) if breakfast else 0
-                lunch_int = int(lunch) if lunch else 0
-                dinner_int = int(dinner) if dinner else 0
-                
-                # Validate within range (0-3 as per model)
-                breakfast_int = max(0, min(3, breakfast_int))
-                lunch_int = max(0, min(3, lunch_int))
-                dinner_int = max(0, min(3, dinner_int))
-                
-            except ValueError:
-                messages.error(request, 'Invalid meal value. Please enter numbers only.')
-                return redirect('track-meals')
-            
-            # update_or_create with defaults parameter
-            _, is_new_entry = MealEntry.objects.update_or_create(
-                user=member.user,
-                group=group,
-                date=date_str,
-                defaults={
-                    'breakfast': breakfast_int,
-                    'lunch': lunch_int,
-                    'dinner': dinner_int,
-                }
-            )
-        
-        action = 'added' if is_new_entry else 'updated'
-        messages.success(request, f'Meal entries {action} for {date_str}')
-        return redirect('track-meals')
-        
-    except Exception as e:
-        messages.error(request, f'Error saving meals: {str(e)}')
-        return redirect('track-meals')
-
-
-def get_meal_date(request):
-    date_str = request.GET.get('date')
-    
-    meal_date = date.today()
-    try:
-        meal_date = date.fromisoformat(date_str)
-    except Exception as e:
-        pass
-    
-    dir = request.GET.get('dir')
-    one_day = timedelta(days=1)
-    
-    if dir == 'back':
-        meal_date = meal_date - one_day
-    elif dir == 'forward':
-        meal_date = meal_date + one_day
-        
-    return meal_date
-    
 
 @login_required
 @group_required
@@ -165,3 +91,28 @@ def track_meals(request):
         'meal_date': meal_date,
     }
     return render(request, 'home/track_meals.html', context)
+
+
+@login_required
+@group_required
+def member_details(request, member_pk):
+    member = GroupMember.objects.filter(pk=member_pk).select_related('user').first()
+    
+    if not member:
+        messages.error(request, 'Not a valid user/member!')
+        return redirect('home')
+    
+    
+    info_date = date.today()
+    
+    member = get_member_details(
+        member,
+        info_date.month,
+        info_date.year
+    )
+    
+    context = {
+        'member': member,
+        'info_date': info_date
+    }
+    return render(request, 'home/member_details.html', context)

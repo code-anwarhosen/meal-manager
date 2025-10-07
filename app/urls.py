@@ -15,4 +15,5 @@ urlpatterns = [
     # Main App (Protected) 
     path('', views.home, name='home'),
     path('track-meals/', views.track_meals, name='track-meals'),
+    path('member-details/<int:member_pk>/', views.member_details, name='member-details'),
 ]
