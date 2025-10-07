@@ -4,9 +4,9 @@
 
 {% block content %}
 <!-- Main Content -->
-<main class="p-4 pb-20 md:px-36">
+<main class="p-2 pb-20 md:px-36">
     <!-- Group Header -->
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm py-4 px-6 mb-2">
         <div class="flex justify-between items-start mb-3">
             <div>
                 <h2 class="text-lg font-bold text-gray-700">{{ group.name }}</h2>
@@ -24,7 +24,7 @@
         </div>
         
         <!-- Month Selector -->
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center mb-2">
             <button class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-chevron-left"></i>
             </button>
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-2 gap-4 mb-6">
+    <div class="grid grid-cols-2 gap-2 mb-2">
         <div class="bg-white p-4 rounded-lg shadow-sm text-center">
             <p class="text-xl font-bold text-blue-600">{{ group.total_expenses }}</p>
             <p class="text-gray-600 text-sm">Total Spending</p>
@@ -71,7 +71,7 @@
         </div>
         
         <!-- Table Rows -->
-        <div class="divide-y divide-gray-200">
+        <div class="divide-y divide-gray-300">
 
             <!-- Members-->
             {% for member in group.members_list %}

@@ -4,14 +4,14 @@
 
 {% block content %}
 <!-- Main Content -->
-<main class="p-4 pb-20 md:px-36">
+<main class="p-2 pb-20 md:px-36">
     <!-- Date Selection -->
-    <div class="bg-white rounded-lg shadow-sm p-4">
+    <div class="bg-white rounded-lg shadow-sm py-4 px-6 mb-2">
         <div class="flex justify-between items-start mb-3">
             <h2 class="text-lg font-bold text-gray-700">Track Meals</h2>
         </div>
 
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-between items-center mb-2">
             <a href="?date={{ meal_date|date:'Y-m-d' }}&dir=back" class="text-gray-500 hover:text-gray-700 p-2">
                 <i class="fas fa-chevron-left"></i>
             </a>
@@ -91,7 +91,6 @@
                 <ul class="mt-1 space-y-1">
                     <li>• <strong>0</strong> = Didn't eat</li>
                     <li>• <strong>1</strong> = One meal</li>
-                    <li>• <strong>1+</strong> = 1+ meal (or had a guest)</li>
                 </ul>
             </div>
         </div>
