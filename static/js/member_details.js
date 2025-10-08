@@ -89,21 +89,22 @@ document.querySelectorAll('.grocery-delete').forEach(btn => {
 // ---------- Grocery edit functionality ---------------
 document.querySelectorAll('.grocery-edit').forEach(btn => {
     btn.addEventListener('click', function() {
+        const grocery_id = this.closest('.grid').querySelector('.grocery-id').textContent;
         const date = this.closest('.grid').querySelector('.date').textContent;
         const itemName = this.closest('.grid').querySelector('.grocery-name').textContent;
         const quantity = this.closest('.grid').querySelector('.quantity').textContent;
         const cost = this.closest('.grid').querySelector('.grocery-cost').textContent;
 
-
-        openGroceryModal(date, itemName, quantity, cost);
+        openGroceryModal(grocery_id, date, itemName, quantity, cost);
     });
 });
 
 
 // Open grocery modal with current values
-function openGroceryModal(date, itemName, quantity, cost) {
+function openGroceryModal(grocery_id, date, itemName, quantity, cost) {
     // Set current values
-    document.getElementById('edit_grocery_date').value = date;
+    document.getElementById('grocery_id').value = grocery_id;
+    document.getElementById('grocery-date').textContent = date;
     document.getElementById('edit_grocery_name').value = itemName;
     document.getElementById('edit_grocery_quantity').value = quantity || '';
     document.getElementById('edit_grocery_cost').value = cost;

@@ -88,7 +88,7 @@ class GroceryExpense(models.Model):
     date = models.DateField()
     item_name = models.CharField(max_length=200)
     quantity = models.CharField(max_length=50, blank=True, help_text="e.g., 2 kg, 1 packet, 5 pieces")
-    cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    cost = models.IntegerField(validators=[MinValueValidator(0)])
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -101,7 +101,7 @@ class GroceryExpense(models.Model):
         ]
     
     def __str__(self):
-        return f"{self.user.username} - {self.item_name} - ₹{self.cost}"
+        return f"{self.user.username} - {self.item_name} - Tk{self.cost}"
 
 
 # Signals to automatically create/update related records

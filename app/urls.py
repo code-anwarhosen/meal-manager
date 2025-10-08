@@ -19,4 +19,5 @@ urlpatterns = [
     
     # Update things
     path('update-meal/<int:member_pk>/', views.update_meal, name='update-meal'),
+    path('update-grocery/<int:member_pk>/', views.update_grocery, name='update-grocery'),
 ]

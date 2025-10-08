@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from datetime import date
 
-from app.models import GroupMember, MealEntry
+from app.models import GroupMember, MealEntry, GroceryExpense
 from app.utils import get_date, group_required
 from .helpers import handle_add_update_meals, get_member_details, member_summary, group_summary
 
@@ -40,9 +40,9 @@ def home(request):
         total_cost = total_meals * group.cost_per_meal
         
         members_list[mem_idx].total_meals = total_meals
-        members_list[mem_idx].total_cost = total_cost
+        members_list[mem_idx].total_cost = round(total_cost)
         members_list[mem_idx].total_spent = total_spent
-        members_list[mem_idx].balance = total_spent - total_cost
+        members_list[mem_idx].balance = round(total_spent - total_cost)
     
     # add members_list attribute to group 
     # to be able to access all memner of the group in template
@@ -172,5 +172,58 @@ def update_meal(request, member_pk):
         messages.error(request, "Meal not found")
     except Exception as e:
         messages.error(request, f"Error updating meal: {str(e)}")
+    
+    return redirect('member-details', member_pk=member_pk)
+
+
+@login_required
+@group_required
+def update_grocery(request, member_pk):
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method")
+        return redirect('member-details', member_pk=member_pk)
+    
+    grocery_id = request.POST.get('grocery_id')
+    item_name = request.POST.get('item_name')
+    quantity = request.POST.get('quantity')
+    cost = request.POST.get('cost', '0')
+    
+    # Validate meal_id exists
+    if not grocery_id:
+        messages.error(request, "Grocery ID is required")
+        return redirect('member-details', member_pk=member_pk)
+    
+    # Convert values with better error handling
+    try:
+        grocery_id = int(grocery_id)
+        cost = int(cost) if cost.strip() else 0
+        
+        # Validate non-negative values
+        if cost < 0:
+            raise ValueError("Cost cannot be negative")
+            
+    except ValueError as e:
+        messages.error(request, f"Invalid input: {e}")
+        return redirect('member-details', member_pk=member_pk)
+    
+    # Get and validate grocery
+    try:
+        grocery = GroceryExpense.objects.get(pk=grocery_id)
+        
+        # Verify if the user is the owner or group admin
+        if grocery.user != request.user and grocery.group.admin != request.user:
+            messages.error(request, "Permission denied")
+            return redirect('member-details', member_pk=member_pk)
+        
+        grocery.item_name = item_name
+        grocery.quantity = quantity
+        grocery.cost = cost
+        grocery.save()
+        messages.success(request, "Grocery updated successfully!")
+        
+    except GroceryExpense.DoesNotExist:
+        messages.error(request, "Grocery not found")
+    except Exception as e:
+        messages.error(request, f"Error updating grocery: {str(e)}")
     
     return redirect('member-details', member_pk=member_pk)

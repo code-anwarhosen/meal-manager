@@ -138,8 +138,8 @@ def get_member_details(member, month: int, year: int):
     # for easy access in member details page
     member.total_meals = total_meals
     member.total_spent = total_spent
-    member.total_cost = total_cost
-    member.balance = total_spent - total_cost
+    member.total_cost = round(total_cost)
+    member.balance = round(total_spent - total_cost)
     
     
     # Include all the meals and groceries of the given month to the member
