@@ -1,29 +1,8 @@
 from django.contrib import messages
 from django.shortcuts import redirect
-from datetime import date, timedelta
 
-from app.utils import group_summary, member_summary
-from app.models import GroupMember, MealEntry
-
-
-def get_meal_date(request):
-    date_str = request.GET.get('date')
-    
-    meal_date = date.today()
-    try:
-        meal_date = date.fromisoformat(date_str)
-    except Exception as e:
-        pass
-    
-    dir = request.GET.get('dir')
-    one_day = timedelta(days=1)
-    
-    if dir == 'back':
-        meal_date = meal_date - one_day
-    elif dir == 'forward':
-        meal_date = meal_date + one_day
-        
-    return meal_date
+from django.db.models import Sum
+from app.models import GroceryExpense, GroupMember, MealEntry
 
 
 def handle_add_update_meals(request, group):
@@ -80,6 +59,60 @@ def handle_add_update_meals(request, group):
     except Exception as e:
         messages.error(request, f'Error saving meals: {str(e)}')
         return redirect('track-meals')
+
+
+def group_summary(group, month: int, year: int):
+    """Calculate monthly summary of a group"""
+    
+    group_groceries = GroceryExpense.objects.filter(
+        group=group,
+        date__year=year,
+        date__month=month
+    )
+    group_meals = MealEntry.objects.filter(
+        group=group,
+        date__year=year,
+        date__month=month
+    )
+    
+    total_group_expenses = group_groceries.aggregate(Sum('cost'))['cost__sum'] or 0
+    total_group_meals = sum(meal.total for meal in group_meals)
+    
+    # Calculate cost per meal (avoid division by zero)
+    cost_per_meal = (total_group_expenses / total_group_meals) if total_group_meals > 0 else 0
+    
+    # Adding attributes to access in dashboard templates
+    group.total_expenses = total_group_expenses
+    group.total_meals = total_group_meals
+    group.cost_per_meal = round(cost_per_meal, 2)
+    
+    return group
+
+
+def member_summary(member, group, month, year):
+    """Calculate monthly summary of a group member"""
+    
+    meals_list = MealEntry.objects.filter(
+        user=member.user,
+        group=group,
+        date__year=year,
+        date__month=month
+    )
+    
+    groceries_list = GroceryExpense.objects.filter(
+        user=member.user,
+        group=group,
+        date__year=year,
+        date__month=month
+    )
+    
+    # Calculate meal totals
+    total_meals = sum(meal.total for meal in meals_list)
+    
+    # Calculate spending
+    total_spent = groceries_list.aggregate(Sum('cost'))['cost__sum'] or 0
+    
+    return total_meals, total_spent, meals_list, groceries_list
 
 
 def get_member_details(member, month: int, year: int):

@@ -1,62 +1,8 @@
-from django.db.models import Sum
 from django.shortcuts import redirect
-from app.models import MealEntry, GroceryExpense
+from datetime import date, timedelta
 
 
-def member_summary(member, group, month, year):
-    """Calculate monthly summary of a group member"""
-    
-    meals_list = MealEntry.objects.filter(
-        user=member.user,
-        group=group,
-        date__year=year,
-        date__month=month
-    )
-    
-    groceries_list = GroceryExpense.objects.filter(
-        user=member.user,
-        group=group,
-        date__year=year,
-        date__month=month
-    )
-    
-    # Calculate meal totals
-    total_meals = sum(meal.total for meal in meals_list)
-    
-    # Calculate spending
-    total_spent = groceries_list.aggregate(Sum('cost'))['cost__sum'] or 0
-    
-    return total_meals, total_spent, meals_list, groceries_list
-
-
-def group_summary(group, month: int, year: int):
-    """Calculate monthly summary of a group"""
-    
-    group_groceries = GroceryExpense.objects.filter(
-        group=group,
-        date__year=year,
-        date__month=month
-    )
-    group_meals = MealEntry.objects.filter(
-        group=group,
-        date__year=year,
-        date__month=month
-    )
-    
-    total_group_expenses = group_groceries.aggregate(Sum('cost'))['cost__sum'] or 0
-    total_group_meals = sum(meal.total for meal in group_meals)
-    
-    # Calculate cost per meal (avoid division by zero)
-    cost_per_meal = (total_group_expenses / total_group_meals) if total_group_meals > 0 else 0
-    
-    # Adding attributes to access in dashboard templates
-    group.total_expenses = total_group_expenses
-    group.total_meals = total_group_meals
-    group.cost_per_meal = round(cost_per_meal, 2)
-    
-    return group
-
-
+# Decorator
 def group_required(view_func):
     """
     Decorator to check if user has a group
@@ -68,3 +14,59 @@ def group_required(view_func):
         
         return view_func(request, *args, **kwargs)
     return wrapper
+
+
+def get_date(date_str: str, direction: str, unit: str = 'day'): 
+    """
+    Args: 
+        date_str: string in iso format e.g. yyyy-mm-dd
+        direction: prev or next
+        unit: day or month
+    Return:
+        class: datetime.date
+    """
+    try:
+        current_date = date.fromisoformat(date_str)
+    except Exception:
+        current_date = date.today()
+    
+    if not direction in ['prev', 'next'] or not unit in ['day', 'month']:
+        return current_date
+        
+    if unit == 'day':
+        if direction == 'prev':
+            return current_date - timedelta(days=1)
+        
+        elif direction == 'next':
+            return current_date + timedelta(days=1)
+    
+    elif unit == 'month':
+        year = current_date.year
+        month = current_date.month
+        
+        if direction == 'prev':
+            if month == 1:
+                month, year = 12, year - 1
+            else:
+                month -= 1
+        elif direction == 'next':
+            if month == 12:
+                month, year = 1, year + 1
+            else:
+                month += 1
+        
+        # Max days of month
+        if month in [4, 6, 9, 11]:
+            max_days = 30
+        elif month == 2:
+            # Future improvement, case: leap year
+            max_days = 28
+        else:
+            max_days = 31
+        
+        # Get days of the month
+        day = min(current_date.day, max_days)
+        
+        return date(year, month, day)
+    
+    return current_date

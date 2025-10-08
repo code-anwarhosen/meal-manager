@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from datetime import date
 
 from app.models import GroupMember
-from app.utils import group_required, group_summary, member_summary
-from .helpers import handle_add_update_meals, get_meal_date, get_member_details
+from app.utils import get_date, group_required
+from .helpers import handle_add_update_meals, get_member_details, member_summary, group_summary
 
 
 @login_required
@@ -61,9 +61,12 @@ def track_meals(request):
     user = request.user
     group = user.group_membership.group
     
-    meal_date = get_meal_date(request)
+    date_str = request.GET.get('date')
+    direction = request.GET.get('dir')
+    
+    meal_date = get_date(date_str, direction)
+    
     if meal_date > date.today():
-        messages.info(request, "Can't access future date!")
         return redirect('track-meals')
     
     # handle create/update MealEntry
