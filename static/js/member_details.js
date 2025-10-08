@@ -22,27 +22,28 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 
-
 // ---------- Meal edit functionality -------------
 document.querySelectorAll('.meal-edit-btn').forEach(btn => {
     btn.addEventListener('click', function() {
+        const meal_id = this.closest('.grid').querySelector('.meal-id').textContent;
         const date = this.closest('.grid').querySelector('.date').textContent;
         const breakfast = this.closest('.grid').querySelector('.breakfast').textContent;
         const lunch = this.closest('.grid').querySelector('.lunch').textContent;
         const dinner = this.closest('.grid').querySelector('.dinner').textContent;
 
-        openMealModal(date, breakfast, lunch, dinner);
+        openMealModal(meal_id, date, breakfast, lunch, dinner);
     });
 });
 
 
 // Open modal with current values
 // arr args are as string
-function openMealModal(date, breakfast, lunch, dinner) {
+function openMealModal(meal_id, date, breakfast, lunch, dinner) {
     // Set modal title
     document.getElementById('modalDate').textContent = date;
 
     // Set current values
+    document.getElementById('meal_id').value = meal_id;
     document.getElementById('edit_breakfast').value = breakfast;
     document.getElementById('edit_lunch').value = lunch;
     document.getElementById('edit_dinner').value = dinner;

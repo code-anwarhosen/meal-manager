@@ -94,6 +94,9 @@
                     <!-- Meals -->
                     {% for meal in member.meals_list %}
                     <div class="grid grid-cols-5 gap-1 p-3 border-b border-gray-100 hover:bg-gray-50 items-center text-sm">
+                        <!-- Placeholder for meal id, for updating purpose -->
+                        <div class="hidden meal-id">{{ meal.pk }}</div>
+
                         <div class="font-medium text-gray-600 date">{{ meal.date|date:"M d" }}</div>
                         <div class="text-center breakfast">{{ meal.breakfast }}</div>
                         <div class="text-center lunch">{{ meal.lunch }}</div>
@@ -198,7 +201,10 @@
             </div>
 
             <!-- Modal Content -->
-            <form class="p-4" id="mealEditForm" method="POST" action="">
+            <form class="p-4" id="mealEditForm" method="POST" action="{% url 'update-meal' member.pk %}">
+                {% csrf_token %}
+
+                <input type="hidden" name="meal_id" id="meal_id">
 
                 <div class="space-y-4">
                     <!-- Breakfast -->

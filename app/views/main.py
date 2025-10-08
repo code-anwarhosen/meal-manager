@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from datetime import date
 
-from app.models import GroupMember
+from app.models import GroupMember, MealEntry
 from app.utils import get_date, group_required
 from .helpers import handle_add_update_meals, get_member_details, member_summary, group_summary
 
@@ -105,7 +105,6 @@ def member_details(request, member_pk):
         messages.error(request, 'Not a valid user/member!')
         return redirect('home')
     
-    
     info_date = date.today()
     
     member = get_member_details(
@@ -119,3 +118,59 @@ def member_details(request, member_pk):
         'info_date': info_date
     }
     return render(request, 'home/member_details.html', context)
+
+
+@login_required
+@group_required
+def update_meal(request, member_pk):
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method")
+        return redirect('member-details', member_pk=member_pk)
+    
+    meal_id = request.POST.get('meal_id')
+    breakfast = request.POST.get('breakfast', '0')
+    lunch = request.POST.get('lunch', '0')
+    dinner = request.POST.get('dinner', '0')
+    
+    # Validate meal_id exists
+    if not meal_id:
+        messages.error(request, "Meal ID is required")
+        return redirect('member-details', member_pk=member_pk)
+    
+    # Convert values with better error handling
+    try:
+        meal_id = int(meal_id)
+        breakfast = int(breakfast) if breakfast.strip() else 0
+        lunch = int(lunch) if lunch.strip() else 0
+        dinner = int(dinner) if dinner.strip() else 0
+        
+        # Validate non-negative values
+        if any(val < 0 for val in [breakfast, lunch, dinner]):
+            raise ValueError("Meal counts cannot be negative")
+            
+    except ValueError as e:
+        messages.error(request, f"Invalid input: {e}")
+        return redirect('member-details', member_pk=member_pk)
+    
+    # Get and validate meal
+    try:
+        meal = MealEntry.objects.get(pk=meal_id)
+        
+        # Verify if the user is the owner or group admin
+        if meal.user != request.user and meal.group.admin != request.user:
+            messages.error(request, "Permission denied")
+            return redirect('member-details', member_pk=member_pk)
+        
+        meal.breakfast = breakfast
+        meal.lunch = lunch
+        meal.dinner = dinner
+        meal.save()
+        
+        messages.success(request, "Meal updated successfully!")
+        
+    except MealEntry.DoesNotExist:
+        messages.error(request, "Meal not found")
+    except Exception as e:
+        messages.error(request, f"Error updating meal: {str(e)}")
+    
+    return redirect('member-details', member_pk=member_pk)
