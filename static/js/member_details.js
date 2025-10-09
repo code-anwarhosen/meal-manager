@@ -84,8 +84,6 @@ document.querySelectorAll('.grocery-delete').forEach(btn => {
 });
 
 
-
-
 // ---------- Grocery edit functionality ---------------
 document.querySelectorAll('.grocery-edit').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -117,8 +115,6 @@ function openGroceryModal(grocery_id, date, itemName, quantity, cost) {
 document.getElementById('closeGroceryModal').addEventListener('click', () => {
     document.getElementById('groceryEditModal').classList.add('hidden');
 });
-
-
 
 
 // ---------- Open add grocery modal --------------

@@ -16,6 +16,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('track-meals/', views.track_meals, name='track-meals'),
     path('member-details/<int:member_pk>/', views.member_details, name='member-details'),
+    path('create-grocery/<int:member_pk>/', views.create_grocery, name='create-grocery'),
     
     # Update things
     path('update-meal/<int:member_pk>/', views.update_meal, name='update-meal'),
