@@ -4,3 +4,10 @@ env
 __pycache__
 static/admin
 db.sqlite3
+
+
+# For tailwincss
+node_modules
+package-lock.json
+package.json
+input.css
