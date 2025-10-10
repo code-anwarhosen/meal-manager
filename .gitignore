@@ -4,4 +4,3 @@ env
 __pycache__
 static/admin
 db.sqlite3
-app/migrations
