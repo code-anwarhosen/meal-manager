@@ -2,7 +2,7 @@ from pathlib import Path
 from decouple import config
 
 # ------- Helpers for class: Config ---------
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Database for development
 DEV_SQLITE_DB = {

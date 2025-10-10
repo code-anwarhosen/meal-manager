@@ -32,13 +32,15 @@ def get_date(date_str: str, direction: str, unit: str = 'day'):
     
     if not direction in ['prev', 'next'] or not unit in ['day', 'month']:
         return current_date
-        
+    
+    today = date.today()
+    
     if unit == 'day':
         if direction == 'prev':
-            return current_date - timedelta(days=1)
+            current_date -= timedelta(days=1)
         
         elif direction == 'next':
-            return current_date + timedelta(days=1)
+            current_date += timedelta(days=1)
     
     elif unit == 'month':
         year = current_date.year
@@ -67,6 +69,6 @@ def get_date(date_str: str, direction: str, unit: str = 'day'):
         # Get days of the month
         day = min(current_date.day, max_days)
         
-        return date(year, month, day)
+        current_date = date(year, month, day)
     
-    return current_date
+    return current_date if current_date <= today else today

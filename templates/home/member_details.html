@@ -28,13 +28,15 @@
 
         <!-- Month Selector -->
         <div class="flex justify-between items-center mb-2">
-            <button class="text-gray-500 hover:text-gray-700 p-2">
+            <a href="?date={{ info_date|date:'Y-m-d' }}&dir=prev" class="text-gray-500 hover:text-gray-700 p-2">
                 <i class="fas fa-chevron-left"></i>
-            </button>
-            <span class="text-lg font-semibold text-gray-700">{{ info_date|date:"F Y" }}</span>
-            <button class="text-gray-500 hover:text-gray-700 p-2">
+            </a>
+            
+            <span class="text-lg font-semibold text-gray-700">{{ info_date|date:'F Y' }}</span>
+            
+            <a href="?date={{ info_date|date:'Y-m-d' }}&dir=next" class="text-gray-500 hover:text-gray-700 p-2">
                 <i class="fas fa-chevron-right"></i>
-            </button>
+            </a>
         </div>
     </div>
 
@@ -158,16 +160,8 @@
                         <div class="text-center font-semibold text-red-600 grocery-cost">{{ grocery.cost }}</div>
 
                         <div class="text-center flex justify-center space-x-2">
-                            <button class="text-green-500 hover:text-green-700" title="Approve">
-                                <i class="fas fa-check grocery-approve"></i>
-                            </button>
-
                             <button class="text-blue-500 hover:text-blue-700" title="Edit">
                                 <i class="fas fa-edit grocery-edit"></i>
-                            </button>
-
-                            <button class="text-red-500 hover:text-red-700" title="Delete">
-                                <i class="fas fa-trash grocery-delete"></i>
                             </button>
                         </div>
                     </div>

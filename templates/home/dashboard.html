@@ -25,13 +25,15 @@
         
         <!-- Month Selector -->
         <div class="flex justify-between items-center mb-2">
-            <button class="text-gray-500 hover:text-gray-700">
+            <a href="?date={{ current_month|date:'Y-m-d' }}&dir=prev" class="text-gray-500 hover:text-gray-700 p-2">
                 <i class="fas fa-chevron-left"></i>
-            </button>
-            <span class="text-lg font-semibold text-gray-700">{{ current_month }}</span>
-            <button class="text-gray-500 hover:text-gray-700">
+            </a>
+            
+            <span class="text-lg font-semibold text-gray-700">{{ current_month|date:'F Y' }}</span>
+            
+            <a href="?date={{ current_month|date:'Y-m-d' }}&dir=next" class="text-gray-500 hover:text-gray-700 p-2">
                 <i class="fas fa-chevron-right"></i>
-            </button>
+            </a>
         </div>
     </div>
 

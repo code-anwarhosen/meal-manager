@@ -12,7 +12,11 @@ from .helpers import handle_add_update_meals, get_member_details, member_summary
 @group_required
 def home(request):
     user = request.user
-    current_date = date.today()
+    
+    # Get Date
+    date_str = request.GET.get('date')
+    direction = request.GET.get('dir')
+    current_date = get_date(date_str, direction, unit='month')
     
     # get the group with needed attributes for dashboard 
     # group_summary(..) -> Group
@@ -50,7 +54,7 @@ def home(request):
     
     context = {
         'group': group,
-        'current_month': current_date.strftime('%B %Y')
+        'current_month': current_date
     }
     return render(request, 'home/dashboard.html', context)
 
@@ -61,18 +65,14 @@ def track_meals(request):
     user = request.user
     group = user.group_membership.group
     
+    # Get Date
     date_str = request.GET.get('date')
     direction = request.GET.get('dir')
-    
     meal_date = get_date(date_str, direction)
-    
-    if meal_date > date.today():
-        return redirect('track-meals')
     
     # handle create/update MealEntry
     if request.method == 'POST':
         handle_add_update_meals(request, group)
-        
     
     # list of all member of the group
     members_list = group.members.all().select_related('user')
@@ -105,7 +105,10 @@ def member_details(request, member_pk):
         messages.error(request, 'Not a valid user/member!')
         return redirect('home')
     
-    info_date = date.today()
+    # Get Date
+    date_str = request.GET.get('date')
+    direction = request.GET.get('dir')
+    info_date = get_date(date_str, direction, unit='month')
     
     member = get_member_details(
         member,
