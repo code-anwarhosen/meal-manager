@@ -40,6 +40,6 @@ class Config:
     # Get the database based on ENV
     @classmethod
     def get_database(cls):
-        if cls.ENV == cls.PROD:
+        if config('WHICH_DB', default='mysql') == 'mysql':
             return PROD_MYSQL_DB
         return DEV_SQLITE_DB
