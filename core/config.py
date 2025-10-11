@@ -1,11 +1,11 @@
 from pathlib import Path
-from decouple import config
+from decouple import config, Csv
 
 # ------- Helpers for class: Config ---------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Database for development
-DEV_SQLITE_DB = {
+SQLITE_DB = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
@@ -13,7 +13,7 @@ DEV_SQLITE_DB = {
 }
 
 # Database for production
-PROD_MYSQL_DB = {
+MYSQL_DB = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': config('DB_NAME', default=None),
@@ -29,17 +29,26 @@ PROD_MYSQL_DB = {
 
 
 # ------ Main Config --------
+# Constants
+class Const:
+    Dev = 'development'
+    Prod = 'production'
+    
+    Sqlite = 'sqlite'
+    MySql = 'mysql'
+    
+    
 class Config:
-    # Constants
-    DEV = 'development'
-    PROD = 'production'
+    SECRET_KEY = config('SECRET_KEY')
+    DEBUG = config('DEBUG', default=False, cast=bool)
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
     
     # ENV: production or development
-    ENV = config('ENV', default=DEV)
+    Env = config('ENV', default=Const.Dev)
 
     # Get the database based on ENV
     @classmethod
     def get_database(cls):
-        if config('WHICH_DB', default='mysql') == 'mysql':
-            return PROD_MYSQL_DB
-        return DEV_SQLITE_DB
+        if config('WHICH_DB', default=Const.Sqlite) == Const.Sqlite:
+            return SQLITE_DB
+        return MYSQL_DB

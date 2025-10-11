@@ -1,15 +1,14 @@
 import os
 from pathlib import Path
-from decouple import config, Csv
-from core.config import Config
+from core.config import Config, Const
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
+SECRET_KEY = Config.SECRET_KEY
+DEBUG = Config.DEBUG
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+ALLOWED_HOSTS = Config.ALLOWED_HOSTS
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -77,7 +76,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 STATIC_URL = '/static/'
 
-if Config.ENV == Config.PROD:
+if Config.Env == Const.Prod:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 else:
     STATICFILES_DIRS = [BASE_DIR / 'static']
