@@ -7,6 +7,11 @@ urlpatterns = [
     path('register/', views.register_user, name='register'),
     path('logout/', views.logout_user, name='logout'),
     
+    path('account/', views.account, name='account'),
+    path('delete-account/', views.delete_account, name='delete-account'),
+    path('update-account/', views.update_account, name='update-account'),
+    path('change-password/', views.change_password, name='change-password'),
+    
     # Group Views
     path('setup-group/', views.setup_group, name='setup-group'),
     path('create-new-group/', views.create_group, name='create-group'),

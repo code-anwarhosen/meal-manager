@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
-from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 def register_user(request):
@@ -99,3 +100,73 @@ def logout_user(request):
         messages.success(request, 'Logout success')
         
     return redirect('login')
+
+@login_required
+def account(request):
+    return render(request, 'auth/account.html')
+
+
+@login_required
+def update_account(request):
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method")
+        return redirect('account')
+    
+    full_name = request.POST.get('full_name')
+    email = request.POST.get('email')
+    
+    if not full_name or not email:
+        messages.error(request, f"full_name and email required!")
+        return redirect('account')
+    
+    user = request.user
+    try:
+        user.first_name = full_name
+        user.email = email
+        user.save()
+        messages.success(request, "Account update successful")
+    except Exception as e:
+        messages.error(request, f"Error: {e}")
+        
+    return redirect('account')
+
+
+@login_required
+def change_password(request):
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method")
+        return redirect('account')
+    
+    current_password = request.POST.get('current_password')
+    new_password = request.POST.get('new_password')
+    confirm_new_password = request.POST.get('confirm_new_password')
+    
+    if not current_password or not new_password or not confirm_new_password:
+        messages.error(request, 'Current password, new password and confirm new password are required')
+        return redirect('account')
+    
+    if new_password != confirm_new_password:
+        messages.error(request, 'New password and confirm new password doesn\'t match')
+        return redirect('account')
+    if len(new_password) < 6:
+        messages.error(request, 'New password must be at least 6 charecters')
+        return redirect('account')
+    
+    user = request.user
+    checked = user.check_password(current_password)
+    
+    if checked:
+        user.set_password(new_password)
+        user.save()
+        update_session_auth_hash(request=request, user=user)
+        messages.success(request, 'Password update successful')
+    else:
+        messages.error(request, 'Incorrect Password')
+    
+    return redirect('account')
+
+
+@login_required
+def delete_account(request):
+    messages.info(request, 'Account deletion will be implemented later')
+    return redirect('account')
