@@ -43,6 +43,9 @@ class Config:
     DEBUG = config('DEBUG', default=False, cast=bool)
     ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
     
+    GMAIL_HOST_USER = config('GMAIL_USER', default=None)
+    GMAIL_HOST_PASSWORD = config('GMAIL_PASSWORD', default=None)
+    
     # ENV: production or development
     Env = config('ENV', default=Const.Dev)
 
