@@ -169,7 +169,7 @@ def update_meal(request, member_pk):
         meal.dinner = dinner
         meal.save()
         
-        messages.success(request, "Meal updated successfully!")
+        messages.success(request, "Update Meal - Done")
         
     except MealEntry.DoesNotExist:
         messages.error(request, "Meal not found")
@@ -223,7 +223,7 @@ def create_grocery(request, member_pk):
             quantity=quantity,
             cost=cost
         )
-        messages.success(request, "Grocery item added successfully!")
+        messages.success(request, "Grocery item - added")
         
     except ValueError as e:
         if "fromisoformat" in str(e):
@@ -282,7 +282,7 @@ def update_grocery(request, member_pk):
         grocery.quantity = quantity
         grocery.cost = cost
         grocery.save()
-        messages.success(request, "Grocery updated successfully!")
+        messages.success(request, "Update Grocery - Done")
         
     except GroceryExpense.DoesNotExist:
         messages.error(request, "Grocery not found")

@@ -76,7 +76,6 @@ def login_user(request):
         user = authenticate(username=phone, password=password)
         if user:
             login(request, user)
-            messages.success(request, 'Login successful!')
             
             # Check if user has group
             if hasattr(user, 'group_membership'):
@@ -97,7 +96,6 @@ def logout_user(request):
     
     if user:
         logout(request)
-        messages.success(request, 'Logout success')
         
     return redirect('login')
 
