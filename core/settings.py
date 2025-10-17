@@ -52,7 +52,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
-    'default': env.db('DATABASE_URL')
+    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3') # type: ignore
 }
 
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
