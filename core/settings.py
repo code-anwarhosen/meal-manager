@@ -1,14 +1,16 @@
-import os
+import os, environ
 from pathlib import Path
-from core.config import Config, Const
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = Config.SECRET_KEY
-DEBUG = Config.DEBUG
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-ALLOWED_HOSTS = Config.ALLOWED_HOSTS
+DEBUG = env.bool('DEBUG', default=True) # type: ignore
+SECRET_KEY = env('SECRET_KEY')
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1']) # type: ignore
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -49,7 +51,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DATABASES = Config.get_database()
+DATABASES = {
+    'default': env.db('DATABASE_URL')
+}
 
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -76,7 +80,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 STATIC_URL = '/static/'
 
-if Config.Env == Const.Prod:
+if env('ENV', default='dev') == 'prod': # type: ignore
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 else:
     STATICFILES_DIRS = [BASE_DIR / 'static']
@@ -89,6 +93,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = Config.GMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = Config.GMAIL_HOST_PASSWORD
+EMAIL_HOST_USER = env('GMAIL_HOST_USER', default=None) # type: ignore
+EMAIL_HOST_PASSWORD = env('GMAIL_HOST_PASSWORD', default=None) # type: ignore
 EMAIL_USE_LOCALTIME = True
