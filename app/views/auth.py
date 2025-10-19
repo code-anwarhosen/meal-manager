@@ -91,13 +91,11 @@ def login_user(request):
     return render(request, 'auth/login.html')
 
 
+@login_required
 def logout_user(request):
-    user = request.user
-    
-    if user:
-        logout(request)
-        
+    logout(request)
     return redirect('login')
+
 
 @login_required
 def account(request):

@@ -104,9 +104,10 @@ class GroceryExpense(models.Model):
         return f"{self.user.username} - {self.item_name} - Tk{self.cost}"
 
 
-# Signals to automatically create/update related records
+
+# Signals to automatically create/update/delete related records
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 
 @receiver(post_save, sender=Group)
 def create_admin_membership(sender, instance, created, **kwargs):
@@ -117,3 +118,19 @@ def create_admin_membership(sender, instance, created, **kwargs):
             group=instance,
             role='admin'
         )
+
+@receiver(post_delete, sender=GroupMember)
+def leave_group_cleanup(sender, instance, **kwargs):
+    """
+    Cleanup meal and grocery entries of the member 
+    when he leave the group
+    """
+    user = instance.user
+
+    if hasattr(user, 'meal_entries'):
+        for meal in user.meal_entries.all():
+            meal.delete()
+            
+    if hasattr(user, 'grocery_expenses'):
+        for grocery in user.grocery_expenses.all():
+            grocery.delete()

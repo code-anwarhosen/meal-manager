@@ -12,6 +12,7 @@ urlpatterns = [
     path('setup-group/', views.setup_group, name='setup-group'),
     path('create-new-group/', views.create_group, name='create-group'),
     path('join-existing-group/', views.join_group, name='join-group'),
+    path('leave-group/', views.leave_group, name='leave-group'),
     
     # Main App (Protected) 
     path('', views.home, name='home'),

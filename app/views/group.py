@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
 from app.models import Group, GroupMember
+from app.utils import group_required
+from .helpers import get_member_details
+from datetime import date
 
 
 @login_required
@@ -72,3 +76,43 @@ def join_group(request):
             messages.error(request, 'Invalid join code')
     
     return redirect('setup-group')
+
+
+@login_required
+@group_required
+def leave_group(request):
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method")
+        return redirect('home')
+    
+    user = request.user
+    member = user.group_membership
+    group = member.group
+    
+    current_date = date.today()
+    member = get_member_details(member, current_date.month, current_date.year)
+    has_balance = member.balance < 0
+    
+    
+    if group.members.count() == 1:
+        # Only one member also means that he is admin, so safe to delete
+        messages.info(request, "Group deleted, since you are the only member!")
+        group.delete()
+        
+    elif user == group.admin:
+        # Admin, group has more than one member
+        if has_balance:
+            messages.info(request, "You have unsettled balance. Settle the balance.")
+        
+        messages.info(request, "Transfer admin role to someone else to leave the group")
+        
+    else:
+        # Members, more than one
+        if has_balance:
+            messages.info(request, f"You have unsettled balance. Settle the balance first!")
+        
+        else:
+            messages.success(request, "Leaving the group!")
+            member.delete()
+
+    return redirect('home')
