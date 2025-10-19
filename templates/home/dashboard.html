@@ -16,16 +16,28 @@
                 </p>
             </div>
 
-            <div>
-                {% if group.admin == user %}
-                <div class="text-sm font-medium text-gray-600">
-                    Join Code:<span class="text-gray-800 px-2 py-1">{{ group.join_code }}</span>
-                </div>
-                {% endif %}
-
-                <button id="leaveGroupBtn" class="text-md font-medium text-gray-600 mt-1 hover:text-red-500 hover:font-bold">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Leave Group
+            <!-- Group Menu -->
+            <div class="relative">
+                <!-- Icon Button -->
+                <button id="groupGearIcon" class="rounded-full">
+                    <i class="fas fa-gear text-gray-600 hover:text-gray-700"></i>
                 </button>
+                
+                <!-- Dropdown Menu -->
+                <div id="groupMenu" class="absolute right-0 mt-1 w-48 bg-white text-gray-700 text-sm rounded-md shadow-lg border border-gray-200 z-50 hidden">
+                    <p class="block px-4 py-3 bg-gray-100 shadow-sm border-b border-gray-300">
+                        Admin <span class="px-1">•</span> {{ group.admin.first_name }}
+                    </p>
+                    
+                    <button class="block px-4 py-3 border-b border-gray-300">
+                        <i class="fas fa-share-nodes mr-2"></i>
+                        Join Code <span class="px-1">•</span> {{ group.join_code }}
+                    </button>
+
+                    <button id="leaveGroupBtn" class="block px-4 py-3">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Leave Group
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -166,6 +178,23 @@
         } else {
             confirmLeaveBtn.disabled = true;
         }
+    });
+</script>
+
+<script>
+    // Context menu on user icon 
+    const groupGearIcon = document.getElementById('groupGearIcon');
+    const groupMenu = document.getElementById('groupMenu');
+    
+    // Toggle menu on button click
+    groupGearIcon.addEventListener('click', function(e) {
+        e.stopPropagation();
+        groupMenu.classList.toggle('hidden');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function() {
+        groupMenu.classList.add('hidden');
     });
 </script>
 {% endblock js %}
