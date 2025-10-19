@@ -93,6 +93,7 @@
         <div class="flex justify-around">
             {% url 'home' as home_url %}
             {% url 'track-meals' as meals_url %}
+            {% url 'account' as account_url %}
             
             <a href="{{ home_url }}" class="flex flex-col items-center p-2 rounded-lg {% if request.path == home_url %}text-blue-500{% else %}text-gray-500 hover:text-blue-500{% endif %}">
                 <i class="fas fa-home mb-1"></i>
@@ -102,6 +103,11 @@
             <a href="{{ meals_url }}" class="flex flex-col items-center p-2 rounded-lg {% if request.path == meals_url %}text-blue-500{% else %}text-gray-500 hover:text-blue-500{% endif %}">
                 <i class="fas fa-utensils mb-1"></i>
                 <span class="text-xs">Meals</span>
+            </a>
+
+            <a href="{{ account_url }}" class="flex flex-col items-center p-2 rounded-lg {% if request.path == account_url %}text-blue-500{% else %}text-gray-500 hover:text-blue-500{% endif %}">
+                <i class="fas fa-user mb-1"></i>
+                <span class="text-xs">Account</span>
             </a>
         </div>
     </nav>

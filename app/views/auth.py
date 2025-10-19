@@ -166,5 +166,20 @@ def change_password(request):
 
 @login_required
 def delete_account(request):
-    messages.info(request, 'Account deletion will be implemented later')
+    if request.method != 'POST':
+        messages.error(request, "Invalid request method")
+        return redirect('account')
+    
+    user = request.user
+    
+    # If not a member of a group, delete right away
+    if not hasattr(user, 'group_membership'):
+        user.delete()
+        messages.success(request, "Account Delete - Done")
+    
+    else:
+        group = user.group_membership.group
+        role = 'admin' if group.admin == user else 'member'
+        messages.info(request, f"You're '{role}' of '{group.name}'. Leave the group to delete your account.")
+        
     return redirect('account')
